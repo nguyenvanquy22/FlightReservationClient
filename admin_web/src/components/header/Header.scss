@@ -1,0 +1,15 @@
+.header {
+    height: 60px;
+    background-color: #394a5a;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 40px 32px;
+    border-bottom-left-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+
+.header .title {
+    font-size: 28px;
+    color: #edf4ff;
+}

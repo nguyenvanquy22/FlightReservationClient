@@ -1,0 +1,27 @@
+// src/components/tables/FlightTable.scss
+.flight-list-container {
+    h3 {
+        font-size: 2rem;
+        margin-top: 32px;
+        margin-bottom: 12px;
+        color: #333;
+        text-align: center;
+    }
+
+    .flight-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    th {
+        background-color: #368dffd0;
+    }
+}
