@@ -8,7 +8,6 @@ function Sidebar() {
     const handleLogout = (e) => {
         e.preventDefault();
 
-
         const confirmLogout = window.confirm("Do you want to log out?");
 
         if (confirmLogout) {
@@ -20,12 +19,12 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <div>
-                <h3>Tickets Management</h3>
+                <h3>Flights Management</h3>
             </div>
             <div>
                 <Link to="/dashboard">Dashboard</Link>
                 <Link to="/flights">Flights</Link>
-                <Link to="/aircrafts">Aircrafts</Link>
+                <Link to="/airplanes">Airplanes</Link>
                 <Link to="/airlines">Airlines</Link>
                 <Link to="/airports">Airports</Link>
                 <Link to="/bookings">Bookings</Link>

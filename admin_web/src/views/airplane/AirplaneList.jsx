@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './AircraftList.scss';
+import './AirplaneList.scss';
 import config from "../config.json";
 import * as XLSX from 'xlsx';
 import AircraftForm from "../../components/form/AircraftForm";
@@ -10,7 +10,7 @@ import Header from '../../components/header/Header';
 
 const { SERVER_API } = config;
 
-const AircraftList = () => {
+const AirplaneList = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const aircraftPerPage = 5;
@@ -171,7 +171,7 @@ const AircraftList = () => {
     const totalPages = Math.ceil(filteredAircrafts.length / aircraftPerPage);
 
     if (loading) {
-        return <div>Loading aircrafts...</div>;
+        return <div>Loading airplanes...</div>;
     }
 
     return (
@@ -181,7 +181,7 @@ const AircraftList = () => {
                 <div className="search-bar">
                     <input
                         type="text"
-                        placeholder="Search aircraft by model..."
+                        placeholder="Search airplanes by model..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -189,7 +189,7 @@ const AircraftList = () => {
 
                 <div className='btns'>
                     <button className="add-aircraft-button" onClick={handleAddNew}>
-                        Add Aircraft
+                        Add Airplane
                     </button>
                     <button className="export-aircraft-button" onClick={exportToExcel}>
                         Export to Excel
@@ -224,4 +224,4 @@ const AircraftList = () => {
     );
 };
 
-export default AircraftList;
+export default AirplaneList;

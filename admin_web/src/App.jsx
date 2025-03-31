@@ -4,7 +4,7 @@ import Sidebar from "./components/sidebar/Sidebar";
 import Dashboard from "./views/dashboard/Dashboard";
 import Users from "./views/user/Users";
 import DetailOrderlist from "./views/detailorder/DetailOrderlist";
-import AircraftList from "./views/aircarft/AircraftList";
+import AirplaneList from "./views/airplane/AirplaneList";
 import AirlineList from "./views/airline/AirlineList";
 import Flightlist from "./views/flight/FlightList";
 import AirportList from "./views/airport/AirportList";
@@ -46,7 +46,7 @@ function App() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="users" element={<Users />} />
                     <Route path="details/:id" element={<DetailOrderlist />} />
-                    <Route path="aircrafts" element={<AircraftList />} />
+                    <Route path="airplanes" element={<AirplaneList />} />
                     <Route path="airlines" element={<AirlineList />} />
                     <Route path="flights" element={<Flightlist />} />
                     <Route path="airports" element={<AirportList />} />

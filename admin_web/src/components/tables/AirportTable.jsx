@@ -5,19 +5,23 @@ const AirportTable = ({ airports, onEdit, onDelete }) => {
     <table className="airport-table">
       <thead>
         <tr>
-          <th>Code</th>
           <th>Name</th>
+          <th>IATA Code</th>
+          <th>ICAO Code</th>
           <th>City</th>
           <th>Country</th>
+          <th>Address</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {airports.map((airport) => (
           <tr key={airport.id}>
-            <td>{airport.code}</td>
             <td>{airport.name}</td>
+            <td>{airport.code}</td>
+            <td>{airport.code}</td>
             <td>{airport.city}</td>
+            <td>{airport.country}</td>
             <td>{airport.country}</td>
             <td>
               <button onClick={() => onEdit(airport)} className="edit_button">
