@@ -1,0 +1,82 @@
+/* Trang Contact List */
+.contact-list-page,
+.traveler-list-page {
+    width: 90%;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 70vh;
+
+}
+
+.contact-table,
+.traveler-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.contact-table th,
+.traveler-table th,
+.contact-table td,
+.traveler-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.contact-table th,
+.traveler-table th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.contact-table tr:nth-child(even),
+.traveler-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+button.edit-contact,
+button.delete-contact,
+button.edit-traveler,
+button.delete-traveler,
+button.add-contact,
+button.add-traveler {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button.edit-contact,
+button.edit-traveler {
+    background-color: #28a745;
+    color: white;
+}
+
+button.delete-contact,
+button.delete-traveler {
+    background-color: #dc3545;
+    color: white;
+}
+
+button.add-contact,
+button.add-traveler {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    display: block;
+    margin-top: 30px;
+    width: fit-content;
+
+}
+
+button:hover {
+    opacity: 0.9;
+}

@@ -1,0 +1,204 @@
+.ticket-booking {
+    position: relative;
+    margin: 20px 0;
+    background-color: white;
+    // height: 100%;
+    border-radius: 10px;
+    // z-index: 100;
+    .title{
+        margin: 20px;
+        height: 40px;
+        display: flex;
+        justify-content: left;
+        padding: 20px;
+        p{
+            margin: 0 10px;
+        }
+        .separate {
+            font-size: 30px;
+            font-weight: 200;
+            margin-top: -10px;
+            color: gray;
+        }
+    }
+    hr {
+        margin: 0 20px;
+        border: 1px solid #f2f2f2;
+    }
+    .main{
+        .title1{
+            width: 300px;
+            font-size: 25px;
+            font-weight: 600;
+            margin-top: 10px;
+            margin-left: 30px;
+            // height: 30px;
+        }
+        .container{
+            display: flex;
+            justify-content: left;
+            padding: 20px;
+        }
+        .place {
+            text-align: left;
+            margin-left: 20px;
+            margin-right: 80px;
+            .time {
+                display: flex;
+                justify-content: space-between;
+                p {
+                    margin-top: -10px;
+                    margin-right: 10px;
+                }
+            }
+        }
+        .info{
+            text-align: left;
+            width: 300px;
+            p{
+                margin-bottom: 10px;
+            }
+        }
+        button {
+            margin-left: 30px;
+            font-size: 20px;
+            width: 130px;
+            height: 50px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    }
+    .popup{
+        z-index: 100;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 750px;
+        min-height: 450px;
+        height: 100%;
+        border-radius: 10px;
+        // background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out; /* Chuyển đổi mượt */
+        .contain {
+            width: 100%;
+            color: #DF0000;
+            height: 100%;
+            overflow-y: scroll;
+            background: white;
+            .depart {
+                background: white;
+                color: gray;
+                width: 100%;
+                height: 85px;
+                padding-top: 15px;
+                padding-left: 50px;
+                // margin-bottom: 20px;
+                border-radius: 8px;
+    
+                h2 {
+                    color: rgb(72, 71, 71);
+                    font-size: 16px;
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                }
+    
+                p {
+                    font-size: 16px;
+                }
+            }
+    
+            .passenger-details {
+                color: gray;
+                width: 100%;
+    
+                .form-info {
+                    background: white;
+                    height: 300px;
+                    width: 100%;
+                    padding: 20px 50px;
+                    border-radius: 8px;
+                    h3 {
+                        margin-bottom: 10px;
+                    }
+    
+                    .input-info {
+                        display: flex;
+                        justify-content: space-evenly;
+                        margin-bottom: 10px;
+    
+                        label {
+                            margin-bottom: 0px;
+                            font-weight: 600;
+                            color: gray;
+                        }
+    
+                        input {
+                            font-size: 16px;
+                            border: none;
+                            border-bottom: 2px solid #DF0000;
+                            width: 200px;
+    
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+    
+                    }
+    
+                    .input-info-seat-class {
+                        margin-top: 30px;
+                        display: flex;
+                        justify-content: left;
+                        margin-bottom: 20px;
+    
+                        label {
+                            color: gray;
+                            font-weight: 600;
+                        }
+    
+                        .seat-class {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-left: 5px;
+                            margin-right: 20px;
+                            margin-top: 5px;
+                            height: 30px;
+                            width: 120px;
+                            font-size: 16px;
+                            color: #DF0000;
+                        }
+
+                        .base-price {
+                            margin-top: 8px;
+                            margin-left: 10px;
+                            font-size: 20px;
+                            color: #DF0000;
+                            font-weight: 600;
+                        }
+                    }
+    
+                }
+            }
+    
+            
+        }
+        button {
+            margin-left: 30px;
+            font-size: 16px;
+            width: 100px;
+            height: 50px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+    }
+    .popup.active{
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+h1 {
+    color: red;
+}

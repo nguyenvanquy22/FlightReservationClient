@@ -1,0 +1,115 @@
+.Header {
+    background-image: linear-gradient(#DF0000, #FA3C41);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 347px;
+}
+
+.flight-container {
+    display: flex;
+    margin-top: 20px;
+    width: 70%;
+    margin: 0 auto;
+    height: 650px;
+    margin-bottom: 50px;
+
+    hr {
+        width: 100%;
+        border: 1px solid gray;
+        margin: 20px 0;
+    }
+
+
+    .filter {
+        color: rgb(79, 79, 79);
+        width: 300px;
+        padding: 20px;
+    }
+
+    .departure-flight {
+        width: 70%;
+        background: whitesmoke;
+        padding: 20px;
+        overflow-y: scroll;
+        scrollbar-width: none;
+        border-radius: 10px;
+
+        .no-flights {
+            margin-top: 100px;
+            font-size: 30px;
+            color: rgb(102, 101, 101);
+
+            img {
+                width: 50%;
+                height: auto;
+            }
+
+            h4 {
+                font-weight: 600;
+            }
+
+            p {
+                margin-top: 20px;
+                font-size: 20px;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .filter-reset {
+        display: flex;
+        margin: 0 20px;
+        justify-content: space-between;
+
+        button {
+            border: none;
+            color: #DF0000;
+            font-size: 16px;
+            background: none;
+            cursor: pointer;
+        }
+    }
+
+    .filter-price {
+        margin: 20px;
+        font-size: 16px;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .filter-stop {
+        margin: 20px;
+        font-size: 16px;
+        font-weight: 500;
+        text-align: left;
+
+        h3 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+
+        div {
+            margin: 8px 0;
+
+            p {
+                font-size: 14px;
+                margin-left: 22px;
+            }
+        }
+    }
+
+    .checkbox {
+        margin-right: 10px;
+        display: inline-block;
+        padding: 20px 20px;
+        cursor: pointer;
+    }
+
+    p {
+        margin: 5px 0;
+        font-size: 20px;
+    }
+}

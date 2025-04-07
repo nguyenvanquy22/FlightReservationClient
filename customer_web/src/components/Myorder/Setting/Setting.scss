@@ -1,0 +1,58 @@
+.main-content-account-linking {
+    width: 800px;
+    margin: 70px auto;
+    height: 50vh;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-content-account-linking h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.account-linking-info {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+}
+
+.account-linking-info p {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.account-linking-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.account-linking-info ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.account-linking-info strong {
+    color: #333;
+}
+
+.link-btn {
+    background-color: #da3737;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.link-btn:hover {
+    background-color: #218838;
+}

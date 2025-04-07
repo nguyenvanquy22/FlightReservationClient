@@ -1,0 +1,130 @@
+footer {
+    // height: 420px;
+    width: 100%;
+    // background-color: #F7F7F7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.partners {
+        height: 200px;
+        width: 100%;
+        margin-top: auto;
+        margin-left: auto;
+}
+
+.seeall_partners {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #DF0000;
+    border-radius: 10px;
+    width: 200px;
+    height: 50px;
+    color: red;
+    font-size: 16px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer_container2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+
+    
+    font-size: 16px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+
+    h1 {
+        font-size: 24px;
+        color: #59595B;
+    };
+
+    p {
+        margin-top: 20px;
+        font-size: 16px;
+        color: gray;
+        font-weight: 400;
+    };
+}
+
+.top_flights {
+    width: 100%;
+}
+
+.title_top_flights {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    p {
+
+        color: #DF0000;
+        font-weight: bold;
+    }
+}
+
+.list_top_flights {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 40vw;
+}
+
+.footer_container3 {
+    color: #59595B;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 0 300px;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.footer_info img{
+    width: 140px;
+    height: 250px;
+}
+
+.footer_app {
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+     img {
+        width: 100px;
+        height: auto;
+     }
+}
+
+.footer_airpaz, .footer_account, .footer_support, .footer_follow {
+    font-size: 16px;
+    div {
+        margin-top: 30px;
+        font-weight: 400;
+        font-size: 16px;
+    }
+}
