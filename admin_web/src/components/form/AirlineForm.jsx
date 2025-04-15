@@ -19,14 +19,26 @@ const AirlineForm = ({ currentAirline, onSubmit, onCancel, errorMessage }) => {
                         {errorMessage?.name && <span className="error">{errorMessage.name}</span>}
                     </label>
                     <label>
-                        Airline Code:
+                        Airline IATA Code:
                         <input
-                            name="code"
+                            name="iataCode"
                             type="text"
-                            defaultValue={currentAirline?.code || ""}
+                            maxLength="2"
+                            defaultValue={currentAirline?.iataCode || ""}
                             required
                         />
-                        {errorMessage?.code && <span className="error">{errorMessage.code}</span>}
+                        {errorMessage?.iataCode && <span className="error">{errorMessage.iataCode}</span>}
+                    </label>
+                    <label>
+                        Airline ICAO Code:
+                        <input
+                            name="icaoCode"
+                            type="text"
+                            maxLength="3"
+                            defaultValue={currentAirline?.icaoCode || ""}
+                            required
+                        />
+                        {errorMessage?.icaoCode && <span className="error">{errorMessage.icaoCode}</span>}
                     </label>
                     <div className="button-container">
                         <button type="submit" className="submit-button">{currentAirline ? "Save Changes" : "Add Airline"}</button>

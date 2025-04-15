@@ -8,7 +8,6 @@ const BookingTable = ({ bookings, users, flights }) => {
                 <tr>
                     <th>User</th>
                     <th>Username</th>
-
                     <th>Phone Number</th>
                     <th>Email</th>
                     <th>Flight Number</th>
@@ -31,7 +30,7 @@ const BookingTable = ({ bookings, users, flights }) => {
                     const fullName = user ? user.fullName : 'Unknown'
 
                     return (
-                        <tr key={booking.bookingId}>
+                        <tr key={booking.id}>
 
                             <td>{fullName}</td>
                             <td>{username}</td>
@@ -40,10 +39,10 @@ const BookingTable = ({ bookings, users, flights }) => {
                             <td>{flight ? flight.flightNumber : 'Unknown Flight'}</td>
                             <td>{booking.status}</td>
                             <td>{booking.totalPrice}</td>
-                            <td>{booking.bookingTicketType[0]?.ticketType.seatClass || 'Unknown'}</td>
-                            <td>{booking.bookingTicketType[0]?.ticketType.name || 'Unknown'}</td>
+                            {/* <td>{booking.bookingTicketType[0]?.ticketType.seatClass || 'Unknown'}</td> */}
+                            {/* <td>{booking.bookingTicketType[0]?.ticketType.name || 'Unknown'}</td> */}
                             <td>
-                                {booking.luggage.length > 0 ? (
+                                {booking?.luggage?.length > 0 ? (
                                     booking.luggage.map((lug, index) => (
                                         <div key={index}>
                                             Price: {lug.price} - Weight: {lug.weight}kg
@@ -54,7 +53,7 @@ const BookingTable = ({ bookings, users, flights }) => {
                                 )}
                             </td>
                             <td>
-                                {booking.passengers.length > 0 ? (
+                                {booking?.passengers?.length > 0 ? (
                                     booking.passengers.map((passenger, index) => (
                                         <div key={index}>
                                             {passenger.firstName} {passenger.lastName} (DOB: {passenger.dateOfBirth})

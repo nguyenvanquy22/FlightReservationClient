@@ -18,11 +18,11 @@ const AirportTable = ({ airports, onEdit, onDelete }) => {
         {airports.map((airport) => (
           <tr key={airport.id}>
             <td>{airport.name}</td>
-            <td>{airport.code}</td>
-            <td>{airport.code}</td>
+            <td>{airport.iataCode}</td>
+            <td>{airport.icaoCode}</td>
             <td>{airport.city}</td>
             <td>{airport.country}</td>
-            <td>{airport.country}</td>
+            <td>{airport.address}</td>
             <td>
               <button onClick={() => onEdit(airport)} className="edit_button">
                 Edit

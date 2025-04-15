@@ -11,17 +11,16 @@ const AdminLoginPage = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:8080/login", {
+            const response = await fetch("http://localhost:8080/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    username: username,
+                    email: username,
                     password: password,
                 }),
             });
-
 
             if (!response.ok) {
                 setError("Invalid username or password.");
@@ -30,11 +29,9 @@ const AdminLoginPage = () => {
 
             const data = await response.json();
 
-
-            if (data.userRole === "ADMIN") {
-                // Save token and userId to localStorage
-                localStorage.setItem("adminToken", data.token);
-                localStorage.setItem("userId", data.userId);
+            if (data.data.user.role === "ADMIN") {
+                localStorage.setItem("adminToken", data.data.user.token);
+                localStorage.setItem("userId", data.data.user.id);
 
                 navigate("/dashboard");
             } else {
@@ -44,10 +41,6 @@ const AdminLoginPage = () => {
             setError("Server error. Please try again later.");
         }
     };
-
-
-
-
 
     return (
         <div className="admin-login-container">

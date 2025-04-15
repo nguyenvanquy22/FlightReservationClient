@@ -23,21 +23,13 @@ const BookingList = () => {
         fetchBookings();
         fetchUsers();
         fetchFlights();
-        const interval = setInterval(() => {
-            fetchBookings();
-            fetchUsers();
-            fetchFlights();
-        }, 30000); // Update every 30 seconds
-
-        // Clean up interval on component unmount
-        return () => clearInterval(interval);
     }, [currentPage]);
 
     const fetchBookings = async () => {
         try {
-            const response = await fetchWithToken(`${SERVER_API}/bookings/all`);
+            const response = await fetchWithToken(`${SERVER_API}/bookings`);
             const data = await response.json();
-            setBookings(data);
+            setBookings(data.data);
             setTotalPages(Math.ceil(data.length / bookingsPerPage));
         } catch (error) {
             console.error('Error fetching booking list:', error);
@@ -46,10 +38,10 @@ const BookingList = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetchWithToken(`${SERVER_API}/users/all`);
+            const response = await fetchWithToken(`${SERVER_API}/users`);
             const data = await response.json();
             const userMap = {};
-            data.forEach(user => {
+            data.data.forEach(user => {
                 userMap[user.id] = {
                     fullName: `${user.firstName} ${user.lastName}`,
                     phoneNumber: user.phoneNumber,
@@ -65,10 +57,10 @@ const BookingList = () => {
 
     const fetchFlights = async () => {
         try {
-            const response = await fetchWithToken(`${SERVER_API}/flights/all`);
+            const response = await fetchWithToken(`${SERVER_API}/flights`);
             const data = await response.json();
             const flightMap = {};
-            data.forEach(flight => {
+            data.data.forEach(flight => {
                 flightMap[flight.flightId] = {
                     flightNumber: flight.flightNumber,
                     basePrice: flight.basePrice,
@@ -119,11 +111,9 @@ const BookingList = () => {
         XLSX.writeFile(workbook, "bookings.xlsx");
     };
 
-
-
     const filteredBookings = bookings.filter((booking) => {
         const user = booking.user;
-        const userName = user ? user.username.toLowerCase() : '';
+        const userName = user ? user.email.toLowerCase() : '';
         const userPhone = user ? user.phoneNumber : '';
         const searchQuery = searchTerm.toLowerCase();
 

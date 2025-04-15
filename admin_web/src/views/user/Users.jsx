@@ -34,21 +34,15 @@ function Users() {
 
     useEffect(() => {
         fetchUsers();
-        const intervalId = setInterval(() => {
-            fetchUsers();
-            // console.log("fetch")
-        }, 30000);
-
-        return () => clearInterval(intervalId);
     }, []);
 
 
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await fetchWithToken(`${SERVER_API}/users/all`);
+            const response = await fetchWithToken(`${SERVER_API}/users`);
             const data = await response.json();
-            setUsers(data.sort((a, b) => b.id - a.id)); // Sắp xếp giảm dần theo ID
+            setUsers(data.data.sort((a, b) => b.id - a.id)); // Sắp xếp giảm dần theo ID
         } catch (error) {
             console.error("Error fetching users:", error);
         }
@@ -95,63 +89,21 @@ function Users() {
 
         const userData = {
             email: formData.get('email')?.trim(),
-            firstName: formData.get('firstName')?.trim(),
-            lastName: formData.get('lastName')?.trim(),
-            username: formData.get('username')?.trim(),
             password: formData.get('password')?.trim() || (formType === "edit" ? currentUser?.password : ""), // Lấy password từ currentUser nếu form là edit
-            phoneNumber: formData.get('phoneNumber')?.trim(),
             role: formData.get('role')?.trim() || "CUSTOMER",
         };
-
-
-        userData.firstName = userData.firstName.charAt(0).toUpperCase() + userData.firstName.slice(1);
-        userData.lastName = userData.lastName.charAt(0).toUpperCase() + userData.lastName.slice(1);
 
         const errors = {};
 
         // Validation
-        if (!userData.firstName) {
-            errors.firstName = "First name is required.";
-        }
-
-        if (!userData.lastName) {
-            errors.lastName = "Last name is required.";
-        }
-
         if (!userData.email) {
             errors.email = "Email is required.";
         } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
             errors.email = "Please enter a valid email address.";
         }
 
-        if (!userData.username) {
-            errors.username = "Username is required.";
-        } else if (/\s/.test(userData.username)) {
-            errors.username = "Username cannot contain spaces.";
-        } else if (!/^[a-zA-Z0-9]+$/.test(userData.username)) {
-            errors.username = "Username can only contain letters and numbers.";
-        } else if (userData.username.length < 3 || userData.username.length > 20) {
-            errors.username = "Username must be between 3 and 20 characters.";
-        }
-
-
-
-        if (!userData.phoneNumber || !/^\d+$/.test(userData.phoneNumber)) {
-            errors.phoneNumber = "Phone number must be a valid number.";
-        } else if (userData.phoneNumber.length < 9 || userData.phoneNumber.length > 12) {
-            errors.phoneNumber = "Phone number must be between 9 and 12 digits.";
-        }
-
         if (!userData.role) {
             errors.role = "Role selection is required.";
-        }
-
-        const duplicateUser = users.find(
-            user => user.username.toLowerCase() === userData.username.toLowerCase() &&
-                user.id !== currentUser?.id
-        );
-        if (duplicateUser) {
-            errors.username = "An user with this username already exists.";
         }
 
         const duplicateEmail = users.find(
@@ -169,15 +121,10 @@ function Users() {
             // So sánh từng trường của userData với currentUser
             return (
                 userData.email !== currentUser.email ||
-                userData.firstName !== currentUser.firstName ||
-                userData.lastName !== currentUser.lastName ||
-                userData.username !== currentUser.username ||
                 userData.password !== currentUser.password ||
-                userData.phoneNumber !== currentUser.phoneNumber ||
                 userData.role !== currentUser.role
             );
         };
-
 
         if (!hasChanges) {
             if (userData.password) {
@@ -191,17 +138,12 @@ function Users() {
             } else {
                 errors.password = "Password is required.";
             }
-
         }
-
-
 
         if (formType === "edit" && !hasChanges()) {
             alert("No changes detected. Please make changes before submitting.");
             return;
         }
-
-
 
         if (Object.keys(errors).length > 0) {
             setErrorMessage(errors);
@@ -223,7 +165,7 @@ function Users() {
                     body: JSON.stringify(userData),
                 });
             } else {
-                response = await fetchWithToken(`${SERVER_API}/users/add`, {
+                response = await fetchWithToken(`${SERVER_API}/users`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData),
@@ -249,20 +191,18 @@ function Users() {
         if (window.confirm("Are you sure you want to delete this user?")) {
             try {
 
-                const responseBooking = await fetchWithToken(`${SERVER_API}/bookings/all`);
+                const responseBooking = await fetchWithToken(`${SERVER_API}/bookings`);
                 if (!responseBooking.ok) {
                     alert("Failed to fetch bookings.");
                     return;
                 }
                 const bookingData = await responseBooking.json();
 
-
-                const isUserInBooking = bookingData.some((booking) => booking.user.id === id);
+                const isUserInBooking = bookingData.data.some((booking) => booking.user.id === id);
                 if (isUserInBooking) {
                     alert("Cannot delete user because they are associated with a booking.");
                     return;
                 }
-
 
                 const response = await fetchWithToken(`${SERVER_API}/users/${id}`, { method: "DELETE" });
                 if (response.ok) {
@@ -278,7 +218,6 @@ function Users() {
         }
     };
 
-
     const exportToExcel = () => {
 
         setUsers(users.sort((a, b) => a.id - b.id))
@@ -290,8 +229,7 @@ function Users() {
     };
 
     const filteredUsers = users.filter((user) =>
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        // user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         String(user.phoneNumber).includes(searchTerm)
     );
 
@@ -311,7 +249,7 @@ function Users() {
                 <div className="search-bar">
                     <input
                         type="text"
-                        placeholder="Search users by name or phone number..."
+                        placeholder="Search users by email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

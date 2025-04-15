@@ -17,55 +17,47 @@ const Flightlist = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [currentFlight, setCurrentFlight] = useState(null);
-    const [aircrafts, setAircrafts] = useState([]);
+    const [airplanes, setAirplanes] = useState([]);
     const [airlines, setAirlines] = useState([]);
     const [airports, setAirports] = useState([]);
     const [transitPoints, setTransitPoints] = useState([]);
     const [showTransitPointFields, setShowTransitPointFields] = useState(false);
     const [allFlights, setallFlights] = useState([]);
 
+    const fetchFlights = async () => {
+        try {
+            const flightRes = await fetchWithToken(`${SERVER_API}/flights`);
+            const flightData = await flightRes.json();
+            const sortedData = flightData.data.sort((a, b) => b.flightId - a.flightId);
+            setallFlights(flightData);
+            setFlights(sortedData);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching flights:', error);
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchFlights = async () => {
-            try {
-                const flightRes = await fetchWithToken(`${SERVER_API}/flights/all`);
-                const flightData = await flightRes.json();
-                const sortedData = flightData.sort((a, b) => b.flightId - a.flightId);
-                setallFlights(flightData);
-                setFlights(sortedData);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching flights:', error);
-                setLoading(false);
-            }
-        };
-
         fetchFlights();
-
-        const intervalId = setInterval(() => {
-            fetchFlights();
-        }, 30000);
-
-
-        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
         const fetchAdditionalData = async () => {
             try {
-                const [aircraftRes, airlineRes, airportRes] = await Promise.all([
-                    fetchWithToken(`${SERVER_API}/aircraft/all`),
-                    fetchWithToken(`${SERVER_API}/airlines/all`),
-                    fetchWithToken(`${SERVER_API}/airports/all`)
+                const [airplaneRes, airlineRes, airportRes] = await Promise.all([
+                    fetchWithToken(`${SERVER_API}/airplanes`),
+                    fetchWithToken(`${SERVER_API}/airlines`),
+                    fetchWithToken(`${SERVER_API}/airports`)
                 ]);
 
-                const aircraftData = await aircraftRes.json();
+                const airplaneData = await airplaneRes.json();
                 const airlineData = await airlineRes.json();
                 const airportData = await airportRes.json();
 
-                setAircrafts(aircraftData);
-                setAirlines(airlineData);
-                setAirports(airportData);
+                setAirplanes(airplaneData.data);
+                setAirlines(airlineData.data);
+                setAirports(airportData.data);
             } catch (error) {
                 console.error('Error fetching additional data:', error);
             }
@@ -118,8 +110,8 @@ const Flightlist = () => {
         const exportData = sortedFlights.map(flight => ({
             "Flight ID": flight.flightId,
             "Flight Number": flight.flightNumber,
-            "Aircraft Model": flight.aircraft?.model || 'Unknown',
-            "Total Seats": flight.aircraft?.totalSeats || 'Unknown',
+            "Airplane Model": flight.airplane?.model || 'Unknown',
+            "Total Seats": flight.airplane?.totalSeats || 'Unknown',
             "Airline Name": flight.airline?.name || 'Unknown',
             "Airline Code": flight.airline?.code || 'Unknown',
             "Departure Airport": flight.departureAirport?.airportName || 'Unknown',
@@ -185,8 +177,6 @@ const Flightlist = () => {
         if (!flightNumberPattern.test(flightData.flightNumber)) {
             errors.flightNumber = "Flight number must contain uppercase letters and numbers.";
         }
-
-
 
         if (flightData.departureAirportId === flightData.arrivalAirportId) {
             errors.airports = "Departure and arrival airports must be different.";
@@ -265,7 +255,7 @@ const Flightlist = () => {
         const formData = new FormData(e.target);
         const flightData = {
             flightNumber: formData.get("flightNumber"),
-            aircraftId: parseInt(formData.get("aircraftId")),
+            airplaneId: parseInt(formData.get("airplaneId")),
             airlineId: parseInt(formData.get("airlineId")),
             departureAirportId: parseInt(formData.get("departureAirportId")),
             arrivalAirportId: parseInt(formData.get("arrivalAirportId")),
@@ -298,7 +288,7 @@ const Flightlist = () => {
 
                     if (
                         currentFlight.flightNumber !== flightData.flightNumber ||
-                        currentFlight.aircraft?.aircraftId !== flightData.aircraftId ||
+                        currentFlight.airplane?.airplaneId !== flightData.airplaneId ||
                         currentFlight.airline?.airlineId !== flightData.airlineId ||
                         currentFlight.departureAirport?.airportId !== flightData.departureAirportId ||
                         currentFlight.arrivalAirport?.airportId !== flightData.arrivalAirportId ||
@@ -422,7 +412,7 @@ const Flightlist = () => {
                 {showForm && (
                     <FlightForm
                         currentFlight={currentFlight}
-                        aircrafts={aircrafts}
+                        airplanes={airplanes}
                         airlines={airlines}
                         airports={airports}
                         transitPoints={transitPoints}

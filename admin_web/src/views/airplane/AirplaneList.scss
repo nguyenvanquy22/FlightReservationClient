@@ -1,4 +1,4 @@
-.aircraft-list-container {
+.airplane-list-container {
     width: 100%;
     padding: 20px;
 
@@ -15,7 +15,7 @@
     margin: 20px 0;
 }
 
-.add-aircraft-button {
+.add-airplane-button {
     padding: 10px 15px;
     background-color: #007bff;
     color: white;
@@ -28,13 +28,13 @@
     font-size: 14px;
 }
 
-.add-aircraft-button:hover {
+.add-airplane-button:hover {
     background-color: #0056b3;
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.export-aircraft-button {
+.export-airplane-button {
     padding: 10px 15px;
     background-color: #28a745;
     color: white;
@@ -47,7 +47,7 @@
     font-size: 14px;
 }
 
-.export-aircraft-button:hover {
+.export-airplane-button:hover {
     background-color: #158635;
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

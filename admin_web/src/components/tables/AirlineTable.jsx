@@ -15,8 +15,8 @@ const AirlineTable = ({ airlines, handleEdit, handleDelete }) => {
                 {airlines.map((airline) => (
                     <tr key={airline.id}>
                         <td>{airline.name}</td>
-                        <td>{airline.code}</td>
-                        <td>{airline.code}</td>
+                        <td>{airline.iataCode}</td>
+                        <td>{airline.icaoCode}</td>
                         <td className='action_column'>
                             <button onClick={() => handleEdit(airline)} className="edit_button">
                                 Edit

@@ -20,27 +20,22 @@ const AirlineList = () => {
     const [errorMessage, setErrorMessage] = useState("");
     // Fetch all airlines
 
+    const fetchAirlines = async () => {
+        try {
+            const response = await fetchWithToken(`${SERVER_API}/airlines`);
+            const data = await response.json();
+
+            // setAirlines(data);
+            setAirlines(data.data.sort((a, b) => b.id - a.id));
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching airlines:', error);
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchAirlines = async () => {
-            try {
-                const response = await fetchWithToken(`${SERVER_API}/airlines/all`);
-                const data = await response.json();
-
-                // setAirlines(data);
-                setAirlines(data.sort((a, b) => b.id - a.id));
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching airlines:', error);
-                setLoading(false);
-            }
-        };
-
-        const intervalId = setInterval(fetchAirlines, 30000);
-
         fetchAirlines();
-
-        return () => clearInterval(intervalId);
-
     }, []);
 
     useEffect(() => {
@@ -54,7 +49,7 @@ const AirlineList = () => {
     const handleDelete = async (airlineId) => {
         if (window.confirm("Are you sure you want to delete this airline?")) {
             try {
-                const response = await fetchWithToken(`${SERVER_API}/airlines/delete/${airlineId}`, {
+                const response = await fetchWithToken(`${SERVER_API}/airlines/${airlineId}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -81,7 +76,8 @@ const AirlineList = () => {
         const formData = new FormData(e.target);
         const airlineData = {
             name: formData.get('name')?.trim(),
-            code: formData.get('code')?.trim(),
+            iataCode: formData.get('iataCode')?.trim(),
+            icaoCode: formData.get('icaoCode')?.trim(),
         };
         // console.log(airlineData)
         const errors = {};
@@ -95,35 +91,37 @@ const AirlineList = () => {
             errors.name = "Airline name must be between 3 and 50 characters.";
         }
 
-
-        if (!airlineData.code) {
-            errors.code = "Airline code is required.";
-        } else if (!/^[A-Z0-9]{3,10}$/.test(airlineData.code)) {
-            errors.code = "Airline code must be 3-10 uppercase letters (no spaces , no special character).";
+        if (!airlineData.iataCode) {
+            errors.iataCode = "Airline IATA Code is required.";
+        } else if (!/^[A-Z0-9]{2}$/.test(airlineData.iataCode)) {
+            errors.iataCode = "Airline IATA Code must be 2 uppercase letters (no spaces , no special character).";
         }
 
-
-        const duplicate = airlines.find(
-            (airline) =>
-                airline.code === airlineData.code && airline.id !== currentAirline?.id
-        );
-
-        if (duplicate) {
-            errors.code = "An airline with this code already exists.";
+        if (!airlineData.icaoCode) {
+            errors.icaoCode = "Airline ICAO Code is required.";
+        } else if (!/^[A-Z0-9]{3}$/.test(airlineData.icaoCode)) {
+            errors.icaoCode = "Airline IATA Code must be 3 uppercase letters (no spaces , no special character).";
         }
 
+        // const duplicate = airlines.find(
+        //     (airline) =>
+        //         airline.code === airlineData.code && airline.id !== currentAirline?.id
+        // );
 
+        // if (duplicate) {
+        //     errors.code = "An airline with this code already exists.";
+        // }
 
         if (Object.keys(errors).length > 0) {
             setErrorMessage(errors);
             return;
         }
 
-
         if (
             currentAirline &&
             currentAirline.name === airlineData.name &&
-            currentAirline.code === airlineData.code
+            currentAirline.iataCode === airlineData.iataCode &&
+            currentAirline.icaoCode === airlineData.icaoCode
         ) {
             alert("No changes detected. Please make changes before submitting.");
             return;
@@ -140,7 +138,7 @@ const AirlineList = () => {
                 });
             } else {
                 // Thêm mới airline
-                response = await fetchWithToken(`${SERVER_API}/airlines/add`, {
+                response = await fetchWithToken(`${SERVER_API}/airlines`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(airlineData),
@@ -151,9 +149,7 @@ const AirlineList = () => {
                 alert(currentAirline ? "Airline updated successfully!" : "Airline added successfully!");
                 setShowForm(false);
                 setErrorMessage([]);
-                const updatedAirlines = await fetchWithToken(`${SERVER_API}/airlines/all`);
-                const data = await updatedAirlines.json();
-                setAirlines(data.sort((a, b) => b.id - a.id));
+                fetchAirlines();
             } else {
                 const errorResponse = await response.json();
                 alert(`Failed to submit airline: ${errorResponse.message || 'Unknown error'}`);
@@ -172,7 +168,7 @@ const AirlineList = () => {
     };
 
     const filteredAirlines = airlines.filter((airline) =>
-        airline.code.toLowerCase().includes(searchTerm.toLowerCase())
+        airline.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const indexOfLastAirline = currentPage * airlinesPerPage;
@@ -184,7 +180,6 @@ const AirlineList = () => {
         return <div>Loading airlines...</div>;
     }
 
-
     return (
         <div className='container'>
             <Header title={'Airline'} />
@@ -192,7 +187,7 @@ const AirlineList = () => {
                 <div className="search-bar">
                     <input
                         type="text"
-                        placeholder="Search airlines by code..."
+                        placeholder="Search airlines by name..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -221,7 +216,6 @@ const AirlineList = () => {
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
                 />
-
 
                 <Pagination
                     currentPage={currentPage}

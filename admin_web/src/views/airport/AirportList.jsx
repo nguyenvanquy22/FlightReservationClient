@@ -20,23 +20,21 @@ const AirportList = () => {
     const [currentAirport, setCurrentAirport] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     // Fetch all airports data
+    const fetchAirports = async () => {
+        try {
+            const response = await fetchWithToken(`${SERVER_API}/airports`);
+            const data = await response.json();
+
+            setAirports(data.data.sort((a, b) => b.id - a.id));
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching airports:', error);
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchAirports = async () => {
-            try {
-                const response = await fetchWithToken(`${SERVER_API}/airports/all`);
-                const data = await response.json();
-                setAirports(data.sort((a, b) => b.id - a.id));
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching airports:', error);
-                setLoading(false);
-            }
-        };
-        const intervalId = setInterval(fetchAirports, 30000);
-
         fetchAirports();
-
-        return () => clearInterval(intervalId);
     }, []);
 
     const handleEdit = (airport) => {
@@ -47,7 +45,7 @@ const AirportList = () => {
     const handleDelete = async (airportId) => {
         if (window.confirm("Are you sure you want to delete this airport?")) {
             try {
-                const response = await fetchWithToken(`${SERVER_API}/airports/delete/${airportId}`, {
+                const response = await fetchWithToken(`${SERVER_API}/airports/${airportId}`, {
                     method: 'DELETE',
                 });
                 if (response.ok) {
@@ -71,17 +69,24 @@ const AirportList = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const airportData = {
-            code: formData.get('code').trim(),
+            iataCode: formData.get('iataCode').trim(),
+            icaoCode: formData.get('icaoCode').trim(),
             name: formData.get('name').trim(),
             city: formData.get('city').trim(),
             country: formData.get('country').trim(),
+            address: formData.get('address').trim(),
         };
         const errors = {};
 
-        if (!airportData.code) {
-            errors.code = "Code is required.";
-        } else if (!/^[A-Z0-9]{3}$/.test(airportData.code)) {
-            errors.code = "Airline code must be 3 uppercase letters (no spaces , no special character).";
+        if (!airportData.iataCode) {
+            errors.iataCode = "IATA Code is required.";
+        } else if (!/^[A-Z0-9]{3}$/.test(airportData.iataCode)) {
+            errors.iataCode = "Airport IATA Code must be 3 uppercase letters (no spaces , no special character).";
+        }
+        if (!airportData.icaoCode) {
+            errors.icaoCode = "ICAO Code is required.";
+        } else if (!/^[A-Z0-9]{4}$/.test(airportData.icaoCode)) {
+            errors.icaoCode = "Airport ICAO Code must be 4 uppercase letters (no spaces , no special character).";
         }
 
         if (!airportData.name) {
@@ -99,9 +104,9 @@ const AirportList = () => {
         } else if (airportData.city.length > 50) {
             errors.city = "City must not exceed 50 characters.";
         } else if (airportData.city.length < 3) {
-            errors.city = "Name must be lager 3 characters.";
+            errors.city = "City must be lager 3 characters.";
         } else if (!/^[A-Za-z\s]+$/.test(airportData.city)) {
-            errors.city = "Name must contain only letters and spaces.";
+            errors.city = "City must contain only letters and spaces.";
         }
 
         if (!airportData.country) {
@@ -109,17 +114,31 @@ const AirportList = () => {
         } else if (airportData.country.length > 50) {
             errors.country = "Country must not exceed 50 characters.";
         } else if (airportData.country.length < 3) {
-            errors.country = "Name must be lager 3 characters.";
+            errors.country = "Country must be lager 3 characters.";
         } else if (!/^[A-Za-z\s]+$/.test(airportData.country)) {
-            errors.country = "Name must contain only letters and spaces.";
+            errors.country = "Country must contain only letters and spaces.";
+        }
+
+        console.log(airportData)
+
+        if (!airportData.address) {
+            errors.address = "Address is required.";
+        } else if (airportData.address.length > 50) {
+            errors.address = "Address must not exceed 50 characters.";
+        } else if (airportData.address.length < 3) {
+            errors.address = "Address must be lager 3 characters.";
+        } else if (!/^[A-Za-z\s]+$/.test(airportData.address)) {
+            errors.address = "Address must contain only letters and spaces.";
         }
 
         if (currentAirport) {
             const hasChanges =
-                airportData.code !== currentAirport.code ||
+                airportData.iataCode !== currentAirport.iataCode ||
+                airportData.icaoCode !== currentAirport.icaoCode ||
                 airportData.name !== currentAirport.name ||
                 airportData.city !== currentAirport.city ||
-                airportData.country !== currentAirport.country;
+                airportData.country !== currentAirport.country ||
+                airportData.address !== currentAirport.addess;
 
             if (!hasChanges) {
                 alert("No changes detected. Please make changes before submitting..");
@@ -141,7 +160,7 @@ const AirportList = () => {
                     body: JSON.stringify(airportData),
                 });
             } else {
-                response = await fetchWithToken(`${SERVER_API}/airports/add`, {
+                response = await fetchWithToken(`${SERVER_API}/airports`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(airportData),
@@ -152,9 +171,7 @@ const AirportList = () => {
                 alert(currentAirport ? "Airport updated successfully!" : "Airport added successfully!");
                 setShowForm(false);
                 setErrorMessage([]);
-                const response = await fetchWithToken(`${SERVER_API}/airports/all`);
-                const data = await response.json();
-                setAirports(data.sort((a, b) => b.id - a.id));
+                fetchAirports();
             } else {
                 console.log("Error submitting airport data.");
             }

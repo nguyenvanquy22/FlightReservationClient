@@ -4,6 +4,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import './styles/TrafficChart.scss';
 import { fetchWithToken } from '../../views/fetchWithToken';
+import config from '../../views/config.json';
+const { SERVER_API } = config;
 
 const TrafficChart = () => {
     const [data, setData] = useState([]);
@@ -18,13 +20,13 @@ const TrafficChart = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const flightsResponse = await fetchWithToken(`http://localhost:8080/api/flights/all`);
+            const flightsResponse = await fetchWithToken(`${SERVER_API}/flights`);
             const flightsData = await flightsResponse.json();
-            const bookingsResponse = await fetchWithToken(`http://localhost:8080/api/bookings/all`);
+            const bookingsResponse = await fetchWithToken(`${SERVER_API}/bookings`);
             const bookingsData = await bookingsResponse.json();
 
             const monthlyFlights = Array(12).fill(0);
-            flightsData.forEach((flight) => {
+            flightsData.data.forEach((flight) => {
                 const flightDate = new Date(flight.departureTime);
                 if (flightDate.getFullYear() === parseInt(year)) {
                     const month = flightDate.getMonth();
@@ -34,7 +36,7 @@ const TrafficChart = () => {
 
             const monthlyBookings = Array(12).fill(0);
             const monthlyIncome = Array(12).fill(0);
-            bookingsData.forEach((booking) => {
+            bookingsData.data.forEach((booking) => {
                 const bookingDate = new Date(booking.bookingDate);
                 if (bookingDate.getFullYear() === parseInt(year)) {
                     const month = bookingDate.getMonth();

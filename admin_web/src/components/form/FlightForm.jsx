@@ -3,7 +3,7 @@ import "./styles/FlightForm.scss";
 
 const FlightForm = ({
     currentFlight,
-    aircrafts,
+    airplanes,
     airlines,
     airports,
     transitPoints,
@@ -27,30 +27,19 @@ const FlightForm = ({
                             <input type="text" name="flightNumber" required defaultValue={currentFlight?.flightNumber} />
                         </label>
                         <label>
-                            Aircraft Model:
-                            <select name="aircraftId" required defaultValue={currentFlight?.aircraft.aircraftId}>
-                                <option value="">Select Aircraft</option>
-                                {aircrafts.map((aircraft) => (
-                                    <option key={aircraft.id} value={aircraft.id}>
-                                        {aircraft.model}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                        <label>
-                            Airline Name:
-                            <select name="airlineId" required defaultValue={currentFlight?.airline.airlineId}>
-                                <option value="">Select Airline</option>
-                                {airlines.map((airline) => (
-                                    <option key={airline.id} value={airline.id}>
-                                        {airline.name}
+                            Airplane Model:
+                            <select name="airplaneId" required defaultValue={currentFlight?.airplane.id}>
+                                <option value="">Select Airplane</option>
+                                {airplanes.map((airplane) => (
+                                    <option key={airplane.id} value={airplane.id}>
+                                        {airplane.model}
                                     </option>
                                 ))}
                             </select>
                         </label>
                         <label>
                             Departure Airport:
-                            <select name="departureAirportId" required defaultValue={currentFlight?.departureAirport.airportId}>
+                            <select name="departureAirportId" required defaultValue={currentFlight?.originAirport.id}>
                                 <option value="">Select Departure Airport</option>
                                 {airports.map((airport) => (
                                     <option key={airport.id} value={airport.id}>
@@ -61,7 +50,7 @@ const FlightForm = ({
                         </label>
                         <label>
                             Arrival Airport:
-                            <select name="arrivalAirportId" required defaultValue={currentFlight?.arrivalAirport.airportId}>
+                            <select name="arrivalAirportId" required defaultValue={currentFlight?.destinationAirport.id}>
                                 <option value="">Select Arrival Airport</option>
                                 {airports.map((airport) => (
                                     <option key={airport.id} value={airport.id}>
@@ -95,10 +84,6 @@ const FlightForm = ({
                                         : ""
                                 }
                             />
-                        </label>
-                        <label>
-                            Base Price:
-                            <input type="number" name="basePrice" required defaultValue={currentFlight?.basePrice} />
                         </label>
                         <label>
                             Status:

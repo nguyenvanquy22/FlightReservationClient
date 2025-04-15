@@ -8,17 +8,6 @@ const AirportForm = ({ currentAirport, onSubmit, onCancel, errorMessage }) => {
                 <h3>{currentAirport ? "Edit Airport" : "Add Airport"}</h3>
                 <form onSubmit={onSubmit}>
                     <label>
-                        Code:
-                        <input
-                            name="code"
-                            type="text"
-                            maxLength="10"
-                            defaultValue={currentAirport?.code || ""}
-                            required
-                        />
-                        {errorMessage?.code && <span className="error">{errorMessage.code}</span>}
-                    </label>
-                    <label>
                         Name:
                         <input
                             name="name"
@@ -28,6 +17,28 @@ const AirportForm = ({ currentAirport, onSubmit, onCancel, errorMessage }) => {
                             required
                         />
                         {errorMessage?.name && <span className="error">{errorMessage.name}</span>}
+                    </label>
+                    <label>
+                        IATA Code:
+                        <input
+                            name="iataCode"
+                            type="text"
+                            maxLength="3"
+                            defaultValue={currentAirport?.iataCode || ""}
+                            required
+                        />
+                        {errorMessage?.iataCode && <span className="error">{errorMessage.iataCode}</span>}
+                    </label>
+                    <label>
+                        ICAO Code:
+                        <input
+                            name="icaoCode"
+                            type="text"
+                            maxLength="4"
+                            defaultValue={currentAirport?.icaoCode || ""}
+                            required
+                        />
+                        {errorMessage?.icaoCode && <span className="error">{errorMessage.icaoCode}</span>}
                     </label>
                     <label>
                         City:
@@ -48,6 +59,16 @@ const AirportForm = ({ currentAirport, onSubmit, onCancel, errorMessage }) => {
                             required
                         />
                         {errorMessage?.country && <span className="error">{errorMessage.country}</span>}
+                    </label>
+                    <label>
+                        Address:
+                        <input
+                            name="address"
+                            type="text"
+                            defaultValue={currentAirport?.address || ""}
+                            required
+                        />
+                        {errorMessage?.address && <span className="error">{errorMessage.address}</span>}
                     </label>
                     <button type="submit" className="submit-button">{currentAirport ? "Save Changes" : "Add Airport"}</button>
                     <button type="button" className="cancel-button" onClick={onCancel}>Cancel</button>

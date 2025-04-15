@@ -6,26 +6,20 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
         <table className="user-table">
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>UserName</th>
-                    {/* <th>Password</th> */}
-                    <th>Role</th>
                     <th>Email</th>
-                    <th>Phone Number</th>
+                    <th>Role</th>
+                    <th>Date created</th>
+                    <th>Date updated</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {currentUsers.map((user) => (
                     <tr key={user.id}>
-                        <td>{user.firstName}</td>
-                        <td>{user.lastName}</td>
-                        <td>{user.username}</td>
-                        {/* <td>{user.password}</td> */}
-                        <td>{user.role}</td>
                         <td>{user.email}</td>
-                        <td>{user.phoneNumber}</td>
+                        <td>{user.role}</td>
+                        <td>{user.createdAt}</td>
+                        <td>{user.updatedAt}</td>
                         <td>
                             <button onClick={() => onEdit(user)} className="edit-button">Edit</button>
                             <button onClick={() => onDelete(user.id)} className="delete-button">Delete</button>

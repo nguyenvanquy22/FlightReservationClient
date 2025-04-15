@@ -10,16 +10,12 @@ const UserForm = ({
     onCancel,
     errorMessage = {}
 }) => {
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
     return (
         <div className="modal">
             <div className="modal-content">
                 <h3>{formType === "add" ? "Add User" : "Edit User"}</h3>
                 <form onSubmit={onSubmit}>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label>First Name:</label>
                         <input
                             type="text"
@@ -46,7 +42,7 @@ const UserForm = ({
                         {errorMessage.lastName && (
                             <span className="error">{errorMessage.lastName}</span>
                         )}
-                    </div>
+                    </div> */}
                     <div className="form-group">
                         <label>Email:</label>
                         <input
@@ -62,57 +58,22 @@ const UserForm = ({
                             <span className="error">{errorMessage.email}</span>
                         )}
                     </div>
-                    <div className="form-group">
-                        <label>Username:</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={onChange}
-                            placeholder="Username"
-                            required
-                            readOnly={formType === "edit"} // Không cho phép thay đổi khi edit
-                        />
-                        {errorMessage.username && (
-                            <span className="error">{errorMessage.username}</span>
-                        )}
-                    </div>
                     {formType === "add" && ( // Ẩn trường password khi là edit
                         <div className="form-group password-container">
                             <label>Password:</label>
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={"password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={onChange}
                                 placeholder="Password"
                                 required
                             />
-                            <button
-                                type="button"
-                                onClick={togglePasswordVisibility}
-                                className="password-toggle-button"
-                            >
-                                {showPassword ? <FaEye /> : <FaEyeSlash />}
-                            </button>
                             {errorMessage.password && (
                                 <span className="error">{errorMessage.password}</span>
                             )}
                         </div>
                     )}
-                    <div className="form-group">
-                        <label>Phone Number:</label>
-                        <input
-                            type="text"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={onChange}
-                            placeholder="Phone Number"
-                        />
-                        {errorMessage.phoneNumber && (
-                            <span className="error">{errorMessage.phoneNumber}</span>
-                        )}
-                    </div>
                     <div className="form-group">
                         <label>Role:</label>
                         <select

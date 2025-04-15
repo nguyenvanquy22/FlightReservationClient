@@ -28,73 +28,50 @@ function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
   // Fetch bookings
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetchWithToken(`${SERVER_API}/bookings/all`);
-        const data = await response.json();
-        const confirmedBookings = data.filter(booking => booking.status === 'CONFIRMED');
-        setBookings(confirmedBookings);
-        setbookingall(data);
-        // console.log(data.length)
-        // console.log(confirmedBookings.length)
+  const fetchBookings = async () => {
+    try {
+      const response = await fetchWithToken(`${SERVER_API}/bookings`);
+      const data = await response.json();
+      const confirmedBookings = data.data.filter(booking => booking.status === 'CONFIRMED');
+      setBookings(confirmedBookings);
+      setbookingall(data);
+      // console.log(data.length)
+      // console.log(confirmedBookings.length)
 
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-      }
-    };
-    fetchBookings();
-    const intervalId = setInterval(() => {
-      fetchBookings();
-    }, 30000);
-    return () => clearInterval(intervalId);
-
-  }, []);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
 
   // Fetch flights
-  useEffect(() => {
-    const fetchFlights = async () => {
-      try {
-        const response = await fetchWithToken(`${SERVER_API}/flights/all`);
-        const data = await response.json();
-        setFlights(data);
-      } catch (error) {
-        console.error('Error fetching flights:', error);
-      }
-    };
-    fetchFlights();
-
-    const intervalId = setInterval(() => {
-      fetchFlights();
-    }, 30000);
-
-    return () => clearInterval(intervalId);
-  }, []);
+  const fetchFlights = async () => {
+    try {
+      const response = await fetchWithToken(`${SERVER_API}/flights`);
+      const data = await response.json();
+      setFlights(data.data);
+    } catch (error) {
+      console.error('Error fetching flights:', error);
+    }
+  };
 
   // Fetch users
+  const fetchUsers = async () => {
+    try {
+      const response = await fetchWithToken(`${SERVER_API}/users`);
+      const data = await response.json();
+      setUsers(data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetchWithToken(`${SERVER_API}/users/all`);
-        const data = await response.json();
-        setUsers(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setLoading(false);
-      }
-    };
-
-
+    fetchBookings();
+    fetchFlights();
     fetchUsers();
-
-    const intervalId = setInterval(() => {
-      fetchUsers();
-    }, 30000);
-
-    return () => clearInterval(intervalId);
   }, []);
-
 
   const totalUsers = users.length;
   const totalFlights = flights.length;

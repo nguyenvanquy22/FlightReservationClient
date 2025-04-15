@@ -7,20 +7,18 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
             <table className="flight-table">
                 <thead>
                     <tr>
-                        <th colSpan="5">Flight Info</th>
+                        <th colSpan="4">Flight Info</th>
                         <th colSpan="4">Departure</th>
                         <th colSpan="4">Arrival</th>
-                        <th rowSpan="2">Base Price</th>
                         <th rowSpan="2">Status</th>
                         <th colSpan="2">Transit Points</th>
                         <th rowSpan="2">Actions</th>
                     </tr>
                     <tr>
                         <th>Flight Number</th>
-                        <th>Aircraft Model</th>
+                        <th>Airplane Model</th>
                         <th>Total Seats</th>
                         <th>Airline Name</th>
-                        <th>Airline Code</th>
                         <th>Departure Airport</th>
                         <th>Departure City</th>
                         <th>Departure Country</th>
@@ -35,32 +33,30 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                 </thead>
                 <tbody>
                     {currentFlights.map((flight) => (
-                        <tr key={flight.flightId}>
+                        <tr key={flight.id}>
                             <td>{flight.flightNumber}</td>
-                            <td>{flight.aircraft?.model || 'Unknown'}</td>
-                            <td>{flight.aircraft?.totalSeats || 'Unknown'}</td>
-                            <td>{flight.airline?.name || 'Unknown'}</td>
-                            <td>{flight.airline?.code || 'Unknown'}</td>
+                            <td>{flight.airplane?.model || 'Unknown'}</td>
+                            <td>{flight.airplane?.capacity || 'Unknown'}</td>
+                            <td>{flight.airplane?.airline?.name || 'Unknown'}</td>
 
                             {/* Departure Info */}
-                            <td>{flight.departureAirport?.airportName || 'Unknown'}</td>
-                            <td>{flight.departureAirport?.city || 'Unknown'}</td>
-                            <td>{flight.departureAirport?.country || 'Unknown'}</td>
+                            <td>{flight.originAirport?.name || 'Unknown'}</td>
+                            <td>{flight.originAirport?.city || 'Unknown'}</td>
+                            <td>{flight.originAirport?.country || 'Unknown'}</td>
                             <td>{new Date(flight.departureTime).toLocaleString()}</td>
 
                             {/* Arrival Info */}
-                            <td>{flight.arrivalAirport?.airportName || 'Unknown'}</td>
-                            <td>{flight.arrivalAirport?.city || 'Unknown'}</td>
-                            <td>{flight.arrivalAirport?.country || 'Unknown'}</td>
+                            <td>{flight.destinationAirport?.name || 'Unknown'}</td>
+                            <td>{flight.destinationAirport?.city || 'Unknown'}</td>
+                            <td>{flight.destinationAirport?.country || 'Unknown'}</td>
                             <td>{new Date(flight.arrivalTime).toLocaleString()}</td>
 
-                            <td>{flight.basePrice}</td>
                             <td>{flight.status}</td>
 
                             {/* Transit Points - Arrival and Departure */}
                             <td>
-                                {flight.transitPointList.length > 0 ? (
-                                    flight.transitPointList.map(point => (
+                                {flight?.transits?.length > 0 ? (
+                                    flight.transits.map(point => (
                                         <div key={point.transitId}>
                                             {point.airport.airportName} ({point.airport.city}, {point.airport.country}) -
                                             Arrival: {new Date(point.arrivalTime).toLocaleString()}
@@ -71,8 +67,8 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                                 )}
                             </td>
                             <td>
-                                {flight.transitPointList.length > 0 ? (
-                                    flight.transitPointList.map(point => (
+                                {flight?.transits?.length > 0 ? (
+                                    flight.transits.map(point => (
                                         <div key={point.transitId}>
                                             {point.airport.airportName} ({point.airport.city}, {point.airport.country}) -
                                             Departure: {new Date(point.departureTime).toLocaleString()}
@@ -82,7 +78,6 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                                     'None'
                                 )}
                             </td>
-
 
                             <td>
                                 <button onClick={() => onEdit(flight)} className="edit_button">Edit</button>

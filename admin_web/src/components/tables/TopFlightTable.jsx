@@ -3,6 +3,7 @@ import React from 'react';
 import './styles/FlightTable.scss';
 
 function TopFlightTable({ flights }) {
+    console.log(flights)
     return (
         <div className="flight-list-container">
             <h3 className='title'>Top Flights with Most Frequent Routes</h3>
