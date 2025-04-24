@@ -191,7 +191,7 @@ const AirplaneList = () => {
                     </button>
                 </div>
                 {showForm && (
-                    <div className="modal">
+                    <div className="airplanes-modal">
                         <div className="modal-content">
                             <AirplaneForm
                                 currentAirplane={currentAirplane}

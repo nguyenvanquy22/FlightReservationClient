@@ -1,64 +1,121 @@
-.aircraft-form-container h3 {
-    margin-bottom: 15px;
-}
-
-.aircraft-form-container label {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
+.aircraft-form-container {
     width: 100%;
-}
+    max-width: 1000px;
+    margin: 0 auto;
 
-.aircraft-form-container input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
+    h3 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-.error-message {
-    color: red;
-    margin-bottom: 10px;
-}
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
 
-.submit-button,
-.cancel-button {
-    margin: 5px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%;
-}
+    .basic-info,
+    .seat-config-info {
+        display: flex;
+        flex-direction: column;
+    }
 
+    label {
+        margin-bottom: 12px;
+        font-weight: 500;
 
-.submit-button {
-    background-color: #3953ff !important;
+        select,
+        input {
+            margin-top: 6px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
 
-}
+    .seat-config-info {
+        label {
 
-.submit-button:hover {
-    background-color: #3658c8;
-    transform: scale(1.05);
-}
+            // style for react-select wrapper
+            .css-1okebmr-indicatorSeparator {
+                display: none;
+            }
 
-.cancel-button {
-    background-color: #f84e37 !important;
+            p {
+                margin-bottom: 4px;
+            }
+        }
 
-}
+        .seat-config-list {
+            margin-top: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+            /* so scrollbar doesn't cover content */
+        }
+    }
 
-.cancel-button:hover {
-    background-color: #e66b3e;
-    transform: scale(1.05);
+    .seat-class-config {
+        border: 1px solid #ddd;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 6px;
 
-}
+        h5 {
+            margin: 0 0 10px;
+        }
 
-.error {
-    color: red;
-    font-size: 14px;
-    font-weight: bold;
+        label {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 8px;
+
+            input {
+                width: 100%;
+            }
+        }
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+
+        button {
+            flex: 1;
+
+            &:first-of-type {
+                margin-right: 12px;
+            }
+        }
+    }
+
+    .submit-button {
+        background-color: #3953ff;
+        color: #fff;
+
+        &:hover {
+            background-color: #3658c8;
+            transform: scale(1.03);
+        }
+    }
+
+    .cancel-button {
+        background-color: #f84e37;
+        color: #fff;
+
+        &:hover {
+            background-color: #e66b3e;
+            transform: scale(1.03);
+        }
+    }
+
+    .error {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 4px;
+    }
 }
