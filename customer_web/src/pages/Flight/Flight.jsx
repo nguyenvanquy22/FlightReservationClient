@@ -145,7 +145,7 @@ const Flight = () => {
                             <div>
                                 {
                                     filteredFlights.map(flight => (
-                                        <DepartureFlight key={flight.flightId} flight={flight} />
+                                        <DepartureFlight key={flight.id} flight={flight} />
                                     ))}
                             </div>
                         )}

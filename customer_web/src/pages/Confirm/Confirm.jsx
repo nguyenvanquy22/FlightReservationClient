@@ -177,18 +177,18 @@ const Confirm = () => {
                                     <div key={index} className="flight-info">
                                         <div>
                                             <div className="main-content">
-                                                <p>{flight.departureAirport.city}</p>
+                                                <p>{flight.originAirport.city}</p>
                                                 <div>
                                                     <p>{`--`} </p>
                                                     <p>{`>`}</p>
                                                 </div>
-                                                <p>{flight.arrivalAirport.city}</p>
-                                                <p className="basePrice">{formatCurrency(flight.basePrice)} VND</p>
+                                                <p>{flight.destinationAirport.city}</p>
+                                                <p className="basePrice">{formatCurrency(flight?.basePrice || 0)} VND</p>
                                             </div>
                                             <div className="transit-points">
                                                 <div className="aircraft">
                                                     <img className="svg" src={assets.aircraftIcon1}></img>
-                                                    <p> {flight.airline.name}</p>
+                                                    <p> {flight.airplane.airline.name}</p>
                                                 </div>
                                                 <div className="left-transit-points">
                                                     <div className="time">
@@ -211,8 +211,8 @@ const Confirm = () => {
                                                 <div key={index} className="right-transit-points">
                                                     <div className="place">
                                                         <div>
-                                                            <p>{flight.departureAirport.airportName}</p>
-                                                            <p>{flight.departureAirport.city} - {flight.departureAirport.country}</p>
+                                                            <p>{flight.originAirport.name}</p>
+                                                            <p>{flight.originAirport.city} - {flight.originAirport.country}</p>
                                                         </div>
                                                         <div className="time-place">
                                                             <img src={assets.clock} />
@@ -220,8 +220,8 @@ const Confirm = () => {
                                                         </div>
                                                         <div>
                                                             <div>
-                                                                <p>{flight.arrivalAirport.airportName}</p>
-                                                                <p>{flight.arrivalAirport.city} - {flight.departureAirport.country}</p>
+                                                                <p>{flight.destinationAirport.name}</p>
+                                                                <p>{flight.destinationAirport.city} - {flight.destinationAirport.country}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -300,7 +300,7 @@ const Confirm = () => {
                             </div>
                             {confirm.length == 1 ? (
                                 confirm.map((flight, index) => (
-                                    <p key={index} className="price">{formatCurrency(totalPrice(flight.basePrice))} VND</p>
+                                    <p key={index} className="price">{formatCurrency(totalPrice(flight?.basePrice || 0))} VND</p>
                                 ))
                             ) : (
                                 <p className="price">

@@ -37,13 +37,13 @@ const DepartureFlight = ({ flight }) => {
                         <p>{flight.flightNumber}</p>
                     </div>
                     <div className="airline">
-                        <p>{flight.airline.name}</p>
+                        <p>{flight.airplane.airline.name}</p>
                     </div>
                 </div>
                 <div className="item-info-time">
                     <div>
                         <p>{formatTime(flight.departureTime)}</p>
-                        <p className="code">{flight.departureAirport.airportCode}</p>
+                        <p className="code">{flight.originAirport.iataCode}</p>
                     </div>
                     <div className="time">
                         {calculateDuration(flight.departureTime, flight.arrivalTime)}
@@ -58,11 +58,11 @@ const DepartureFlight = ({ flight }) => {
                             <p>{formatTime(flight.arrivalTime)}</p>
                             {calculateDaysOvernight(flight.departureTime, flight.arrivalTime) != 0 ? <p className="overNight">+{calculateDaysOvernight(flight.departureTime, flight.arrivalTime)}d</p> : null}
                         </div>
-                        <p className="code">{flight.arrivalAirport.airportCode}</p>
+                        <p className="code">{flight.destinationAirport.iataCode}</p>
                     </div>
                 </div>
                 <div className="item-info">
-                    <p>{formatPrice(flight.basePrice)} VND</p>
+                    <p>{formatPrice(flight?.basePrice || 0)} VND</p>
                     <button className="select" onClick={handleSelect}>
                         {isSelected ? 'Close' : 'Select'}
                     </button>
@@ -79,22 +79,22 @@ const DepartureFlight = ({ flight }) => {
                     </div>
                     <hr />
                     <div className="price">
-                        <p className="hightline"> {formatPrice(flight.basePrice)} VND</p>
+                        <p className="hightline"> {formatPrice(flight?.basePrice || 0)} VND</p>
                         <p>Price / Pax</p>
                     </div>
                     <div className="aircraft">
                         <img className="svg" src={assets.aircraftIcon1}></img>
-                        <p> {flight.airline.name}</p>
+                        <p> {flight.airplane.airline.name}</p>
                     </div>
                     <div className="departure-info">
                         <p className="place">{formatTime(flight.departureTime)} - {formatDate(flight.departureTime)}</p>
-                        <p> {flight.departureAirport.airportName}</p>
-                        <p>({flight.departureAirport.city}-{flight.departureAirport.country})</p>
+                        <p> {flight.originAirport.name}</p>
+                        <p>({flight.originAirport.city}-{flight.originAirport.country})</p>
                     </div>
                     <div className="arrival-info">
                         <p className="place">{formatTime(flight.arrivalTime)} - {formatDate(flight.arrivalTime)}  </p>
-                        <p>{flight.arrivalAirport.airportName}</p>
-                        <p>({flight.arrivalAirport.city}-{flight.arrivalAirport.country})</p>
+                        <p>{flight.destinationAirport.name}</p>
+                        <p>({flight.destinationAirport.city}-{flight.destinationAirport.country})</p>
                     </div>
                     <div className="cabin-bag">
                         <img className="bag" src={assets.bag}></img>
@@ -176,8 +176,8 @@ const DepartureFlight = ({ flight }) => {
                             <div key={index} className="right-transit-points">
                                 <div className="place">
                                     <div>
-                                        <p>{flight.departureAirport.airportName}</p>
-                                        <p>{flight.departureAirport.city} - {flight.departureAirport.country}</p>
+                                        <p>{flight.originAirport.name}</p>
+                                        <p>{flight.originAirport.city} - {flight.originAirport.country}</p>
                                     </div>
                                     <div className="time-place">
                                         <img src={assets.clock} />
@@ -185,7 +185,7 @@ const DepartureFlight = ({ flight }) => {
                                     </div>
                                     <div>
                                         <div>
-                                            <p>{transit.airport.airportName}</p>
+                                            <p>{transit.airport.name}</p>
                                             <p>{transit.airport.city} - {transit.airport.country}</p>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@ const DepartureFlight = ({ flight }) => {
                                 <div className="place">
                                     <div>
                                         <div>
-                                            <p>{transit.airport.airportName}</p>
+                                            <p>{transit.airport.name}</p>
                                             <p>{transit.airport.city} - {transit.airport.country}</p>
                                         </div>
                                     </div>
@@ -202,8 +202,8 @@ const DepartureFlight = ({ flight }) => {
                                         <p>{calculateDuration(transit.departureTime, flight.arrivalTime)}</p>
                                     </div>
                                     <div>
-                                        <p>{flight.arrivalAirport.airportName}</p>
-                                        <p>{flight.arrivalAirport.city} - {flight.departureAirport.country}</p>
+                                        <p>{flight.destinationAirport.name}</p>
+                                        <p>{flight.destinationAirport.city} - {flight.destinationAirport.country}</p>
                                     </div>
                                 </div>
                             </div>

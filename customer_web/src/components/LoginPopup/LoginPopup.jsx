@@ -12,10 +12,9 @@ const LoginPopup = ({ setShowLogin }) => {
     const [password, setPassword] = useState("");
     const [register, setRegister] = useState({
         email: "",
+        password: "",
         firstName: "",
         lastName: "",
-        username: "",
-        password: "",
         phoneNumber: "",
         role: "CUSTOMER"
     });
@@ -28,12 +27,15 @@ const LoginPopup = ({ setShowLogin }) => {
 
         if (currState === "Login") {
             try {
-                const response = await fetch("http://localhost:8080/login", {
+                const response = await fetch("http://localhost:8080/api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({
+                        email: username,
+                        password
+                    }),
                 });
 
                 if (!response.ok) {
@@ -45,9 +47,9 @@ const LoginPopup = ({ setShowLogin }) => {
 
                 // if (data.userRole === "CUSTOMER") 
                 //     {
-                localStorage.setItem("customerToken", data.token);
-                localStorage.setItem("userId", data.userId);
-                setToken(data.token);
+                localStorage.setItem("customerToken", data.data.token);
+                localStorage.setItem("userId", data.data.user.id);
+                setToken(data.data.token);
                 setIsLoggedIn(true);
                 setShowLogin(false);
                 setUsername("");
@@ -63,7 +65,7 @@ const LoginPopup = ({ setShowLogin }) => {
             }
         } else {
             try {
-                const response = await fetch("http://localhost:8080/register", {
+                const response = await fetch("http://localhost:8080/api/auth/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

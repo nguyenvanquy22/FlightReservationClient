@@ -44,12 +44,12 @@ const StoreContextProvider = (props) => {
                 console.error("Token is missing");
                 return;
             }
-            const response = await axios.get(`${url}/api/airports/all`, {
+            const response = await axios.get(`${url}/api/airports`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Kèm token vào header
                 },
             });
-            setPlace(response.data);
+            setPlace(response.data.data);
         } catch (error) {
             console.error("Error fetching place list:", error);
         }
@@ -62,12 +62,12 @@ const StoreContextProvider = (props) => {
                 console.error("Token is missing");
                 return;
             }
-            const response = await axios.get(`${url}/api/flights/all`, {
+            const response = await axios.get(`${url}/api/flights`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Kèm token vào header
                 },
             });
-            setFlights(response.data);
+            setFlights(response.data.data);
         } catch (error) {
             console.error("Error fetching flight list:", error);
         }
@@ -87,13 +87,12 @@ const StoreContextProvider = (props) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setUser(response.data);
+            setUser(response.data.data);
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
         // }
     };
-
 
     const fetchMyorder = async () => {
         const token = localStorage.getItem("customerToken");
@@ -110,7 +109,7 @@ const StoreContextProvider = (props) => {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    if (response.data !== null) {
+                    if (response.data.data !== null) {
                         setMyorder((prevOrders) => [...prevOrders, response.data]);
                     }
                     i++;
@@ -140,14 +139,14 @@ const StoreContextProvider = (props) => {
         const today = new Date();
         if (departureDate === "") {
             filter = flights.filter(flight =>
-                flight.departureAirport.city === place1 &&
-                flight.arrivalAirport.city === place2
+                flight.originAirport.city === place1 &&
+                flight.destinationAirport.city === place2
                 // && new Date(flight.departureTime) > today
             );
         } else {
             filter = flights.filter(flight =>
-                flight.departureAirport.city === place1 &&
-                flight.arrivalAirport.city === place2 &&
+                flight.originAirport.city === place1 &&
+                flight.destinationAirport.city === place2 &&
                 flight.departureTime.includes(departureDate)
             );
         }
@@ -273,7 +272,7 @@ const StoreContextProvider = (props) => {
                 return;
             }
 
-            const response = await axios.post(`${url}/api/bookings/add`, data, {
+            const response = await axios.post(`${url}/api/bookings`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -281,9 +280,9 @@ const StoreContextProvider = (props) => {
                 withCredentials: true,
             });
 
-            console.log("Booking successful:", response.data);
-            const { bookingId, message, paymentUrl } = response.data;
-            console.log("Booking ID:", bookingId);
+            console.log("Booking successful:", response.data.data);
+            const { id, message, paymentUrl } = response.data.data;
+            console.log("Booking ID:", id);
             console.log("Message:", message);
             console.log("Payment URL:", paymentUrl);
             setUrlPaymen(paymentUrl);

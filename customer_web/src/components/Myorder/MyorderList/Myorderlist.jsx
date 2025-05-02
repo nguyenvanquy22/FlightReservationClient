@@ -36,7 +36,7 @@ const Myorderlist = () => {
 
                 <div className="main-content-orderlist">
                     {myorder.map((flight, index) => {
-                        if (flight.user.id == localStorage.getItem("userId")) {
+                        if (flight.user?.id == localStorage.getItem("userId")) {
                             return <TicketBooking key={index} myTicket={flight} />;
                         }
                     })}

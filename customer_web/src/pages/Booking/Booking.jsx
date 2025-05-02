@@ -104,10 +104,10 @@ const Booking = () => {
             <div className="booking-page">
                 {!isRoundTrip ? (
                     confirm.map((flight) =>
-                        <div key={flight.flightId} className="contain">
+                        <div key={flight.id} className="contain">
                             <div className="depart">
                                 <h2>
-                                    {flight.departureAirport.city} ({flight.departureAirport.country}) - {flight.arrivalAirport.city} ({flight.arrivalAirport.country})
+                                    {flight.originAirport.city} ({flight.originAirport.country}) - {flight.destinationAirport.city} ({flight.destinationAirport.country})
                                 </h2>
                                 <p>
                                     {formatTime(flight.departureTime)} - {formatDate(flight.departureTime)} |
@@ -117,7 +117,7 @@ const Booking = () => {
                             </div>
                             <div className="passenger-details">
                                 {passengers.map((passenger, index) => {
-                                    const totalPrice = calculateTotalPrice(flight.basePrice, passenger.seatClass, passenger.luggage);
+                                    const totalPrice = calculateTotalPrice(flight?.basePrice || 0, passenger.seatClass, passenger.luggage);
                                     return (
                                         <div key={index} className="form-info">
                                             <h3>Passenger {index + 1}</h3>
@@ -205,7 +205,7 @@ const Booking = () => {
                                     confirm.map((flight, index) =>
                                         <div key={index}>
                                             <h2>
-                                                {flight.departureAirport.city} ({flight.departureAirport.country}) - {flight.arrivalAirport.city} ({flight.arrivalAirport.country})
+                                                {flight.originAirport.city} ({flight.originAirport.country}) - {flight.destinationAirport.city} ({flight.destinationAirport.country})
                                             </h2>
                                             <p>
                                                 {formatTime(flight.departureTime)} - {formatDate(flight.departureTime)} | {` `}
@@ -312,7 +312,7 @@ const Booking = () => {
                             // ? formatPrice(confirm.reduce((total, flight) => total + passengers.reduce((total, passenger) => total + calculateTotalPrice(confirm[0].basePrice, passenger.seatClass, passenger.luggage), 0)) )
                             // ? formatPrice(priceRoundTrip * adults) 
                             ? formatPrice(passengers.reduce((total, passenger) => total + calculateTotalPrice(priceRoundTrip, passenger.seatClass, passenger.luggage), 0))
-                            : formatPrice(passengers.reduce((total, passenger) => total + calculateTotalPrice(confirm[0].basePrice, passenger.seatClass, passenger.luggage), 0))
+                            : formatPrice(passengers.reduce((total, passenger) => total + calculateTotalPrice(confirm[0]?.basePrice || 0, passenger.seatClass, passenger.luggage), 0))
                         }
                         {` `}VND
                         {/* {formatCurrency(totalPrice(confirm.reduce((sum, flight) => sum + flight.basePrice, 0)))} VND */}
@@ -339,7 +339,7 @@ const Booking = () => {
                             !isRoundTrip ?
                                 postBooking({
                                     userId: localStorage.getItem("userId"),  // Giả định userId là 1
-                                    flightId: confirm[0].flightId,
+                                    flightId: confirm[0].id,
                                     bookingTicketTypes,
                                     passengers: passengers.map(p => ({
                                         firstName: p.firstName,
