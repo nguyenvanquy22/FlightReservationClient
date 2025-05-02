@@ -37,39 +37,29 @@ const Flightlist = () => {
             setLoading(false);
         }
     };
+    const fetchAdditionalData = async () => {
+        try {
+            const [airplaneRes, airlineRes, airportRes] = await Promise.all([
+                fetchWithToken(`${SERVER_API}/airplanes`),
+                fetchWithToken(`${SERVER_API}/airlines`),
+                fetchWithToken(`${SERVER_API}/airports`)
+            ]);
+
+            const airplaneData = await airplaneRes.json();
+            const airlineData = await airlineRes.json();
+            const airportData = await airportRes.json();
+
+            setAirplanes(airplaneData.data);
+            setAirlines(airlineData.data);
+            setAirports(airportData.data);
+        } catch (error) {
+            console.error('Error fetching additional data:', error);
+        }
+    };
 
     useEffect(() => {
         fetchFlights();
-    }, []);
-
-    useEffect(() => {
-        const fetchAdditionalData = async () => {
-            try {
-                const [airplaneRes, airlineRes, airportRes] = await Promise.all([
-                    fetchWithToken(`${SERVER_API}/airplanes`),
-                    fetchWithToken(`${SERVER_API}/airlines`),
-                    fetchWithToken(`${SERVER_API}/airports`)
-                ]);
-
-                const airplaneData = await airplaneRes.json();
-                const airlineData = await airlineRes.json();
-                const airportData = await airportRes.json();
-
-                setAirplanes(airplaneData.data);
-                setAirlines(airlineData.data);
-                setAirports(airportData.data);
-            } catch (error) {
-                console.error('Error fetching additional data:', error);
-            }
-        };
-
         fetchAdditionalData();
-
-        const intervalId = setInterval(() => {
-            fetchAdditionalData();
-        }, 30000);
-
-        return () => clearInterval(intervalId);
     }, []);
 
     const handleAddTransitPoint = () => {
@@ -77,19 +67,11 @@ const Flightlist = () => {
         setTransitPoints([
             ...transitPoints,
             {
-                airport: {
-                    airportId: '',
-                    airportCode: '',
-                    airportName: '',
-                    city: '',
-                    country: '',
-
-                },
-                stopOrder: newStopOrder,
+                airportId: '',
+                transitOrder: newStopOrder,
                 arrivalTime: '',
                 departureTime: ''
             }])
-
 
 
         setShowTransitPointFields(true);
@@ -99,7 +81,7 @@ const Flightlist = () => {
     const handleRemoveTransitPoint = (index) => {
         const newPoints = transitPoints
             .filter((_, idx) => idx !== index)
-            .map((point, idx) => ({ ...point, stopOrder: idx + 1 }));
+            .map((point, idx) => ({ ...point, transitOrder: idx + 1 }));
 
         setTransitPoints(newPoints);
     };
@@ -125,7 +107,7 @@ const Flightlist = () => {
             "Base Price": flight.basePrice,
             "Status": flight.status,
             "Transit Points": flight.transitPointList.map(point =>
-                `${point.airport.airportName} (${point.airport.city}, ${point.airport.country}) - Arrival: ${new Date(point.arrivalTime).toLocaleString()} - Departure: ${new Date(point.departureTime).toLocaleString()}`
+                `${point.airport?.airportName} (${point.airport?.city}, ${point.airport?.country}) - Arrival: ${new Date(point?.arrivalTime).toLocaleString()} - Departure: ${new Date(point?.departureTime).toLocaleString()}`
             ).join('; ')
         }));
 
@@ -139,8 +121,8 @@ const Flightlist = () => {
         setCurrentFlight(flight);
         setShowForm(true);
 
-        if (flight.transitPointList && flight.transitPointList.length > 0) {
-            setTransitPoints(flight.transitPointList);
+        if (flight.transits && flight.transits.length > 0) {
+            setTransitPoints(flight.transits);
             setShowTransitPointFields(true);
         } else {
             setTransitPoints([]);
@@ -203,22 +185,22 @@ const Flightlist = () => {
 
             // Kiểm tra thời gian của điểm dừng hiện tại
             if (new Date(transit.arrivalTime) >= new Date(transit.departureTime)) {
-                errors.transitTimes = `Arrival time of transit ${transit.stopOrder} must be before departure time.`;
+                errors.transitTimes = `Arrival time of transit ${transit.transitOrder} must be before departure time.`;
             }
 
             // Kiểm tra thời gian giữa điểm dừng hiện tại và điểm dừng kế tiếp
             if (nextTransit) {
                 if (new Date(transit.departureTime) >= new Date(nextTransit.arrivalTime)) {
-                    errors.transitTimes = `Departure time of transit ${transit.stopOrder} must be before arrival time of transit ${nextTransit.stopOrder}.`;
+                    errors.transitTimes = `Departure time of transit ${transit.transitOrder} must be before arrival time of transit ${nextTransit.transitOrder}.`;
                 }
             }
 
             // Kiểm tra ràng buộc với thời gian chuyến bay chính
             if (index === 0 && new Date(transit.arrivalTime) <= new Date(flightData.departureTime)) {
-                errors.transitTimes = `Arrival time of the first transit point (${transit.stopOrder}) must be after the flight's departure time.`;
+                errors.transitTimes = `Arrival time of the first transit point (${transit.transitOrder}) must be after the flight's departure time.`;
             }
             if (index === flightData.transitPointList.length - 1 && new Date(transit.departureTime) >= new Date(flightData.arrivalTime)) {
-                errors.transitTimes = `Departure time of the last transit point (${transit.stopOrder}) must be before the flight's arrival time.`;
+                errors.transitTimes = `Departure time of the last transit point (${transit.transitOrder}) must be before the flight's arrival time.`;
             }
         });
 
@@ -264,7 +246,7 @@ const Flightlist = () => {
             basePrice: parseFloat(formData.get("basePrice")),
             status: formData.get("status"),
             transitPointList: transitPoints.map((point) => ({
-                stopOrder: parseInt(point.stopOrder),
+                transitOrder: parseInt(point.transitOrder),
                 airportId: parseInt(point.airport.airportId),
                 arrivalTime: point.arrivalTime,
                 departureTime: point.departureTime,
@@ -305,7 +287,7 @@ const Flightlist = () => {
                         currentFlight.transitPointList.some((currentPoint, index) => {
                             const newPoint = flightData.transitPointList[index];
                             return (
-                                currentPoint.stopOrder !== newPoint?.stopOrder ||
+                                currentPoint.transitOrder !== newPoint?.transitOrder ||
                                 currentPoint?.airport?.airportId !== newPoint?.airportId ||
                                 parseDate(currentPoint.arrivalTime) !== parseDate(newPoint?.arrivalTime) ||
                                 parseDate(currentPoint.departureTime) !== parseDate(newPoint?.departureTime)
