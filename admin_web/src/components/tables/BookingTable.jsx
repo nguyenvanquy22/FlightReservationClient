@@ -1,74 +1,80 @@
-// Table.jsx
+// BookingTable.jsx
 import React from 'react';
+import './styles/BookingTable.scss';
 
-const BookingTable = ({ bookings, users, flights }) => {
+const BookingTable = ({ bookings }) => {
+    const formatDate = dt =>
+        new Date(dt).toLocaleString();
+
     return (
         <table className="booking-table">
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Username</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
-                    <th>Flight Number</th>
+                    <th>Booking ID</th>
+                    <th>Booking Date</th>
+                    <th>User Email</th>
                     <th>Status</th>
+                    <th># Tickets</th>
                     <th>Total Price</th>
-                    <th>Seat Class</th>
-                    <th>Ticket Name</th>
-                    <th>Luggage</th>
-                    <th>Passengers</th>
+                    <th>Tickets Detail</th>
                 </tr>
             </thead>
-
             <tbody>
-                {bookings.map((booking) => {
-                    const user = users[booking.user.id];
-                    const flight = flights[booking.flightId];
-                    const username = user ? user.username : 'Unknown';
-                    const phoneNumber = user ? user.phoneNumber : 'Unknown';
-                    const email = user ? user.email : 'Unknown';
-                    const fullName = user ? user.fullName : 'Unknown'
+                {bookings.map(booking => {
+                    // Tính tổng giá: tổng price của tickets + bất cứ phí luggage nào nếu có
+                    const totalPrice = booking.tickets
+                        .reduce((sum, t) => sum + parseFloat(t.price || 0), 0)
+                        .toFixed(2);
 
                     return (
                         <tr key={booking.id}>
-
-                            <td>{fullName}</td>
-                            <td>{username}</td>
-                            <td>{phoneNumber}</td>
-                            <td>{email}</td>
-                            <td>{flight ? flight.flightNumber : 'Unknown Flight'}</td>
+                            <td>{booking.id}</td>
+                            <td>{formatDate(booking.bookingDate)}</td>
+                            <td>{booking.user.email}</td>
                             <td>{booking.status}</td>
-                            <td>{booking.totalPrice}</td>
-                            {/* <td>{booking.bookingTicketType[0]?.ticketType.seatClass || 'Unknown'}</td> */}
-                            {/* <td>{booking.bookingTicketType[0]?.ticketType.name || 'Unknown'}</td> */}
+                            <td>{booking.tickets.length}</td>
+                            <td>{totalPrice}</td>
                             <td>
-                                {booking?.luggage?.length > 0 ? (
-                                    booking.luggage.map((lug, index) => (
-                                        <div key={index}>
-                                            Price: {lug.price} - Weight: {lug.weight}kg
-                                        </div>
-                                    ))
-                                ) : (
-                                    'No Luggage'
-                                )}
-                            </td>
-                            <td>
-                                {booking?.passengers?.length > 0 ? (
-                                    booking.passengers.map((passenger, index) => (
-                                        <div key={index}>
-                                            {passenger.firstName} {passenger.lastName} (DOB: {passenger.dateOfBirth})
-                                        </div>
-                                    ))
-                                ) : (
-                                    'No Passengers'
-                                )}
+                                <table className="nested-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Seat</th>
+                                            <th>Class</th>
+                                            <th>Passenger</th>
+                                            <th>Ticket Price</th>
+                                            <th>Luggage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {booking.tickets.map(ticket => (
+                                            <tr key={ticket.id}>
+                                                <td>{ticket.seatNumber}</td>
+                                                <td>
+                                                    {ticket.seatClassAirplaneFlight?.seatClass?.name || '—'}
+                                                </td>
+                                                <td>
+                                                    {ticket.passenger.firstName}{' '}
+                                                    {ticket.passenger.lastName}
+                                                </td>
+                                                <td>{parseFloat(ticket.price).toFixed(2)}</td>
+                                                <td>
+                                                    {ticket.luggages && ticket.luggages.length > 0
+                                                        ? ticket.luggages.map(l => (
+                                                            <div key={l.luggageId}>
+                                                                {l.luggageType} ({l.weightLimit}kg): {l.price}
+                                                            </div>
+                                                        ))
+                                                        : '—'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </td>
                         </tr>
                     );
                 })}
             </tbody>
-
-
         </table>
     );
 };

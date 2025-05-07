@@ -1,17 +1,36 @@
-table {
+/* BookingTable.scss */
+.booking-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 2rem;
 
     th,
     td {
-        padding: 10px;
         border: 1px solid #ddd;
-        text-align: left;
+        padding: 8px;
+        vertical-align: top;
     }
 
     th {
-        background-color: #f4f4f4;
+        text-align: left;
     }
 
-    margin-top: 10px;
+    .nested-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 4px 6px;
+        }
+
+        th {
+            font-size: 0.9rem;
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+    }
 }
