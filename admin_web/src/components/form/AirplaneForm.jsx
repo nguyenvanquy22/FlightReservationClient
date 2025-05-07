@@ -48,11 +48,10 @@ const AirplaneForm = ({ currentAirplane, onSubmit, onCancel, errorMessage }) => 
                         seatClassId: sc.id,
                         rowCount: existing.rowCount.toString(),
                         columnCount: existing.columnCount.toString(),
-                        seatQuantity: existing.seatQuantity.toString(),
                     };
                     preSelected.push({ value: sc.id, label: sc.name });
                 } else {
-                    cfgs[sc.id] = { seatClassId: sc.id, rowCount: '', columnCount: '', seatQuantity: '' };
+                    cfgs[sc.id] = { seatClassId: sc.id, rowCount: '', columnCount: '' };
                 }
             });
 
@@ -92,13 +91,12 @@ const AirplaneForm = ({ currentAirplane, onSubmit, onCancel, errorMessage }) => 
             registrationCode: form.registrationCode.value,
             airlineId: parseInt(form.airlineId.value, 10),
             status: form.status.value,
-            seatClassRequests: selectedSeatClasses.map(opt => {
+            seatClassConfigs: selectedSeatClasses.map(opt => {
                 const cfg = seatClassConfigs[opt.value];
                 return {
                     seatClassId: opt.value,
                     rowCount: parseInt(cfg.rowCount, 10),
                     columnCount: parseInt(cfg.columnCount, 10),
-                    seatQuantity: parseInt(cfg.seatQuantity, 10)
                 };
             })
         };
@@ -198,9 +196,8 @@ const AirplaneForm = ({ currentAirplane, onSubmit, onCancel, errorMessage }) => 
                                         Seat Quantity
                                         <input
                                             type="number"
-                                            value={cfg.seatQuantity}
-                                            onChange={e => handleSeatClassChange(id, 'seatQuantity', e.target.value)}
-                                            required
+                                            value={cfg.rowCount * cfg.columnCount}
+                                            disabled
                                         />
                                     </label>
                                 </div>

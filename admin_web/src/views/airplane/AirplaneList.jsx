@@ -65,89 +65,101 @@ const AirplaneList = () => {
         setErrorMessage("");
     };
 
-    const handleSubmitForm = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-
-        const airplaneData = {
-            model: formData.get('model')?.trim(),
-            totalSeat: parseInt(formData.get('totalSeat'), 10),
-        };
+    const handleSubmitForm = async (formData) => {
 
         const errors = {};
 
-        // Validation
-        if (!airplaneData.model) {
+        // 1. Validate model
+        if (!formData.model || !formData.model.trim()) {
             errors.model = "Model name is required.";
-        } else if (!/^[a-zA-Z0-9\s\-]+$/.test(airplaneData.model)) {
+        } else if (!/^[a-zA-Z0-9\s\-]+$/.test(formData.model)) {
             errors.model = "Model name must only contain letters, numbers, spaces, and dashes.";
-        } else if (airplaneData.model.length < 3 || airplaneData.model.length > 50) {
+        } else if (formData.model.length < 3 || formData.model.length > 50) {
             errors.model = "Model name must be between 3 and 50 characters.";
         }
 
-        if (!airplaneData.totalSeat || isNaN(airplaneData.totalSeat)) {
-            errors.totalSeat = "Total seats must be a valid number.";
-        } else if (!Number.isInteger(airplaneData.totalSeat)) {
-            errors.totalSeat = "Total seats must be an integer.";
-        } else if (airplaneData.totalSeat <= 0) {
-            errors.totalSeat = "Total seats must be greater than 0.";
-        } else if (airplaneData.totalSeat > 2000) {
-            errors.totalSeat = "Total seats must not exceed 2000.";
+        // 2. Validate registrationCode
+        if (!formData.registrationCode || !formData.registrationCode.trim()) {
+            errors.registrationCode = "Registration code is required.";
+        } else if (!/^[A-Z0-9\-]+$/.test(formData.registrationCode)) {
+            errors.registrationCode = "Registration code must be uppercase letters, numbers or dashes.";
+        } else if (formData.registrationCode.length < 3 || formData.registrationCode.length > 20) {
+            errors.registrationCode = "Registration code must be between 3 and 20 characters.";
         }
 
-        const duplicateAirplane = airplanes.find(
-            airplane => airplane.model.toLowerCase() === airplaneData.model.toLowerCase() &&
-                airplane.id !== currentAirplane?.id
+        // 3. Validate airlineId
+        if (!formData.airlineId || isNaN(formData.airlineId)) {
+            errors.airlineId = "An airline must be selected.";
+        }
+
+        // 4. Validate status
+        if (!["ACTIVE", "MAINTENANCE"].includes(formData.status)) {
+            errors.status = "Status must be either ACTIVE or MAINTENANCE.";
+        }
+
+        // 5. Validate seatClassConfigs (must select at least one)
+        if (!Array.isArray(formData.seatClassConfigs) || !formData.seatClassConfigs.length) {
+            errors.seatClassConfigs = "At least one seat class configuration is required.";
+        } else {
+            formData.seatClassConfigs.forEach((cfg, idx) => {
+                if (!cfg.rowCount || isNaN(cfg.rowCount) || cfg.rowCount <= 0) {
+                    errors[`seatClassConfigs.${idx}.rowCount`] = "Row count must be a positive integer.";
+                }
+                if (!cfg.columnCount || isNaN(cfg.columnCount) || cfg.columnCount <= 0) {
+                    errors[`seatClassConfigs.${idx}.columnCount`] = "Column count must be a positive integer.";
+                }
+                if (cfg.seatQuantity != null) {
+                    if (isNaN(cfg.seatQuantity) || cfg.seatQuantity < 0) {
+                        errors[`seatClassConfigs.${idx}.seatQuantity`] = "Seat quantity must be zero or a positive number.";
+                    }
+                }
+            });
+        }
+
+        // 6. Check duplicate model
+        const duplicate = airplanes.find(ap =>
+            ap.model.toLowerCase() === formData.model.toLowerCase() &&
+            ap.id !== currentAirplane?.id
         );
-        if (duplicateAirplane) {
+        if (duplicate) {
             errors.model = "An airplane with this model already exists.";
         }
 
-        if (Object.keys(errors).length > 0) {
+        // 7. If errors, show and abort
+        if (Object.keys(errors).length) {
             setErrorMessage(errors);
             return;
         }
 
         try {
+            setErrorMessage({});
             let response;
-            if (currentAirplane) {
+            const url = currentAirplane
+                ? `${SERVER_API}/airplanes/${currentAirplane.id}`
+                : `${SERVER_API}/airplanes`;
+            const method = currentAirplane ? 'PUT' : 'POST';
 
-                if (
-                    currentAirplane &&
-                    currentAirplane.model === airplaneData.model &&
-                    currentAirplane.totalSeat === airplaneData.totalSeat
-                ) {
-                    alert("No changes detected. Please make changes before submitting.");
-                    return;
-                }
+            response = await fetchWithToken(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
 
-                response = await fetchWithToken(`${SERVER_API}/airplanes/${currentAirplane.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(airplaneData),
-                });
+            if (!response.ok) {
+                const errJson = await response.json();
+                alert(`Error: ${errJson.message || 'Unknown error'}`);
             } else {
-                response = await fetchWithToken(`${SERVER_API}/airplanes`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(airplaneData),
-                });
-            }
-
-            if (response.ok) {
                 alert(currentAirplane ? "Airplane updated successfully" : "Airplane added successfully");
                 setShowForm(false);
-                setErrorMessage([]);
                 fetchAirplanes();
-            } else {
-                const errorResponse = await response.json();
-                alert(`Failed to submit airplane data: ${errorResponse.message || 'Unknown error'}`);
             }
-        } catch (error) {
-            console.error('Error submitting airplane data:', error);
-            alert('An error occurred while submitting airplane data. Please try again.');
+        } catch (err) {
+            console.error(err);
+            alert("An unexpected error occurred. Please try again.");
         }
     };
+
+
     const exportToExcel = () => {
         setAirplanes(airplanes.sort((a, b) => a.id - b.id))
         const worksheet = XLSX.utils.json_to_sheet(airplanes);

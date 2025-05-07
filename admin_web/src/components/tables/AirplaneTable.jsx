@@ -2,6 +2,8 @@ import React from 'react';
 import './styles/AirplaneTable.scss'
 
 const AirplaneTable = ({ currentAirplanes, onEdit, onDelete }) => {
+
+
   return (
     <table className="aircraft-table">
       <thead>
@@ -20,7 +22,10 @@ const AirplaneTable = ({ currentAirplanes, onEdit, onDelete }) => {
             <td>{airplane.model}</td>
             <td>{airplane.registrationCode}</td>
             <td>{airplane.airline.name}</td>
-            <td>{airplane.capacity}</td>
+            <td>
+              {airplane.seatClassAirplanes
+                .reduce((sum, t) => sum + t.rowCount * t.columnCount, 0)}
+            </td>
             <td>{airplane.status}</td>
             <td>
               <button onClick={() => onEdit(airplane)} className="edit-button">
