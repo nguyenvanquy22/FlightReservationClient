@@ -22,14 +22,12 @@ const Flightlist = () => {
     const [airports, setAirports] = useState([]);
     const [transitPoints, setTransitPoints] = useState([]);
     const [showTransitPointFields, setShowTransitPointFields] = useState(false);
-    const [allFlights, setallFlights] = useState([]);
 
     const fetchFlights = async () => {
         try {
             const flightRes = await fetchWithToken(`${SERVER_API}/flights`);
             const flightData = await flightRes.json();
-            const sortedData = flightData.data.sort((a, b) => b.flightId - a.flightId);
-            setallFlights(flightData);
+            const sortedData = flightData.data.sort((a, b) => b.id - a.id);
             setFlights(sortedData);
             setLoading(false);
         } catch (error) {
@@ -138,7 +136,7 @@ const Flightlist = () => {
                 });
                 if (response.ok) {
                     alert("Flight deleted successfully");
-                    setFlights(flights.filter(flight => flight.flightId !== flightId));
+                    await fetchFlights();
                 } else {
                     alert("Failed to delete flight");
                 }
@@ -155,205 +153,134 @@ const Flightlist = () => {
 
     const validateFlightData = (flightData) => {
         const errors = {};
-        const flightNumberPattern = /^[A-Z0-9]+$/;
-        if (!flightNumberPattern.test(flightData.flightNumber)) {
-            errors.flightNumber = "Flight number must contain uppercase letters and numbers.";
+
+        // 1. Flight Number: chỉ uppercase letters + numbers, không rỗng
+        if (!/^[A-Z0-9]+$/.test(flightData.flightNumber)) {
+            errors.flightNumber = "Flight number must contain only uppercase letters and numbers.";
         }
 
-        if (flightData.departureAirportId === flightData.arrivalAirportId) {
+        // 2. Airports khác nhau
+        if (flightData.originAirportId === flightData.destinationAirportId) {
             errors.airports = "Departure and arrival airports must be different.";
         }
 
-        const transitAirports = flightData.transitPointList.map(point => point.airportId);
-        const hasDuplicateTransitAirport = transitAirports.some(airport =>
-            airport === flightData.departureAirportId || airport === flightData.arrivalAirportId);
-        if (hasDuplicateTransitAirport) {
-            errors.transitPoints = "Transit airports cannot be the same as departure or arrival airports.";
+        // 3. Times hợp lệ: arrival > departure
+        const dep = new Date(flightData.departureTime);
+        const arr = new Date(flightData.arrivalTime);
+        if (!(arr > dep)) {
+            errors.times = "Arrival time must be after departure time.";
         }
 
-        const uniqueTransitAirports = new Set(transitAirports);
-        if (uniqueTransitAirports.size !== transitAirports.length) {
-            errors.transitPointsUnique = "Transit airports must be unique.";
-        }
-
-        if (new Date(flightData.arrivalTime) <= new Date(flightData.departureTime)) {
-            errors.time = "Arrival time must be after departure time.";
-        }
-
-        flightData.transitPointList.forEach((transit, index) => {
-            const nextTransit = flightData.transitPointList[index + 1];
-
-            // Kiểm tra thời gian của điểm dừng hiện tại
-            if (new Date(transit.arrivalTime) >= new Date(transit.departureTime)) {
-                errors.transitTimes = `Arrival time of transit ${transit.transitOrder} must be before departure time.`;
+        // 4. Transit points: không trùng departure/arrival, unique, và thời gian nội bộ
+        const seenAirports = new Set();
+        flightData.transits.forEach((t, i) => {
+            const at = new Date(t.arrivalTime),
+                dt = new Date(t.departureTime);
+            if (!(at < dt)) {
+                errors[`transit_${i}`] = `Transit #${t.transitOrder}: arrival must be before departure.`;
             }
+            if (i === 0 && at <= dep) {
+                errors[`transit_${i}`] = `First transit arrival must be after flight departure.`;
+            }
+            if (i === flightData.transits.length - 1 && dt >= arr) {
+                errors[`transit_${i}`] = `Last transit departure must be before flight arrival.`;
+            }
+            if (seenAirports.has(t.airportId)) {
+                errors.transits = "Transit airports must be unique.";
+            }
+            if (t.airportId === flightData.originAirportId || t.airportId === flightData.destinationAirportId) {
+                errors.transits = "Transit airports cannot match departure or arrival airport.";
+            }
+            seenAirports.add(t.airportId);
 
-            // Kiểm tra thời gian giữa điểm dừng hiện tại và điểm dừng kế tiếp
-            if (nextTransit) {
-                if (new Date(transit.departureTime) >= new Date(nextTransit.arrivalTime)) {
-                    errors.transitTimes = `Departure time of transit ${transit.transitOrder} must be before arrival time of transit ${nextTransit.transitOrder}.`;
+            // check next transit order/time
+            const next = flightData.transits[i + 1];
+            if (next) {
+                const nextArr = new Date(next.arrivalTime);
+                if (dt >= nextArr) {
+                    errors[`transit_${i}`] = `Transit #${t.transitOrder}: departure must be before next transit's arrival.`;
                 }
-            }
-
-            // Kiểm tra ràng buộc với thời gian chuyến bay chính
-            if (index === 0 && new Date(transit.arrivalTime) <= new Date(flightData.departureTime)) {
-                errors.transitTimes = `Arrival time of the first transit point (${transit.transitOrder}) must be after the flight's departure time.`;
-            }
-            if (index === flightData.transitPointList.length - 1 && new Date(transit.departureTime) >= new Date(flightData.arrivalTime)) {
-                errors.transitTimes = `Departure time of the last transit point (${transit.transitOrder}) must be before the flight's arrival time.`;
             }
         });
 
-
-        if (isNaN(flightData.basePrice) || flightData.basePrice <= 0) {
-            errors.price = "Price must be a positive number.";
+        // 5. Seat configs: phải có ít nhất 1, giá > 0
+        if (!Array.isArray(flightData.seatConfigs) || flightData.seatConfigs.length === 0) {
+            errors.seatConfigs = "You must configure at least one seat class with a price.";
+        } else {
+            flightData.seatConfigs.forEach((sc, i) => {
+                const price = parseFloat(sc.seatPrice);
+                if (isNaN(price) || price <= 0) {
+                    errors[`seatConfig_${i}`] = `Seat class "${sc.seatClassName}" price must be a positive number.`;
+                }
+            });
         }
 
-        if (Object.keys(errors).length > 0) {
+        if (Object.keys(errors).length) {
+            // hiển thị alert hoặc gán setErrorMessage tuỳ UI
             alert(Object.values(errors).join("\n"));
             return false;
         }
-
         return true;
     };
 
-    const handleSubmitForm = async (e) => {
-        e.preventDefault();
-
-        // Chuyển đổi giờ và phút từ local time sang UTC bằng cách cộng thêm giờ
-        const convertToUTC = (localTime) => {
-            const date = new Date(localTime);
-            date.setHours(date.getHours() + 14);
-            return date.toISOString();
-        };
-
-        const convertToUTC2 = (localTime) => {
-            const date = new Date(localTime);
-            date.setHours(date.getHours() + 14);
-            return date.toISOString();
-        };
-
-
-        const formData = new FormData(e.target);
-        const flightData = {
-            flightNumber: formData.get("flightNumber"),
-            airplaneId: parseInt(formData.get("airplaneId")),
-            airlineId: parseInt(formData.get("airlineId")),
-            departureAirportId: parseInt(formData.get("departureAirportId")),
-            arrivalAirportId: parseInt(formData.get("arrivalAirportId")),
-            departureTime: convertToUTC(formData.get("departureTime")),
-            arrivalTime: convertToUTC(formData.get("arrivalTime")),
-            basePrice: parseFloat(formData.get("basePrice")),
-            status: formData.get("status"),
-            transitPointList: transitPoints.map((point) => ({
-                transitOrder: parseInt(point.transitOrder),
-                airportId: parseInt(point.airport.airportId),
-                arrivalTime: point.arrivalTime,
-                departureTime: point.departureTime,
-            })),
-        };
-
-        const isValid = validateFlightData(flightData);
-        if (!isValid) {
-            return;
-        }
+    const handleSubmitForm = async (flightData) => {
+        // 1. Validate
+        if (!validateFlightData(flightData)) return;
 
         try {
+            // 2. Chuẩn bị payload đúng tên server kỳ vọng
+            const payload = {
+                flightNumber: flightData.flightNumber,
+                airplaneId: flightData.airplaneId,
+                originAirportId: flightData.originAirportId,
+                destinationAirportId: flightData.destinationAirportId,
+                departureTime: flightData.departureTime,  // '2025-04-01T00:00'
+                arrivalTime: flightData.arrivalTime,
+                status: flightData.status,
+                // map seatConfigs → seatOptions theo DTO server
+                seatOptions: flightData.seatConfigs.map(sc => ({
+                    seatClassAirplaneId: sc.seatClassAirplaneId,
+                    seatPrice: sc.seatPrice
+                })),
+                transits: flightData.transits.map(t => ({
+                    airportId: t.airportId,
+                    departureTime: t.departureTime,
+                    arrivalTime: t.arrivalTime,
+                    transitOrder: t.transitOrder
+                }))
+            };
+
+            let response;
             if (currentFlight) {
-                const isDataChanged = (currentFlight, flightData) => {
-
-                    const parseDate = (dateStr) => {
-                        const date = new Date(dateStr);
-                        return date.toISOString().slice(0, 19);
-                    };
-                    let checkdataflight = false;
-
-                    if (
-                        currentFlight.flightNumber !== flightData.flightNumber ||
-                        currentFlight.airplane?.airplaneId !== flightData.airplaneId ||
-                        currentFlight.airline?.airlineId !== flightData.airlineId ||
-                        currentFlight.departureAirport?.airportId !== flightData.departureAirportId ||
-                        currentFlight.arrivalAirport?.airportId !== flightData.arrivalAirportId ||
-                        currentFlight.departureTime !== parseDate(flightData.departureTime) ||
-                        currentFlight.arrivalTime !== parseDate(flightData.arrivalTime) ||
-                        currentFlight.basePrice !== flightData.basePrice ||
-                        currentFlight.status !== flightData.status
-                    ) {
-                        checkdataflight = true;
-                    }
-
-                    // Check if transit points have changed
-                    const checkdataflighttransitpoint = currentFlight.transitPointList.length !== flightData.transitPointList.length ||
-                        currentFlight.transitPointList.some((currentPoint, index) => {
-                            const newPoint = flightData.transitPointList[index];
-                            return (
-                                currentPoint.transitOrder !== newPoint?.transitOrder ||
-                                currentPoint?.airport?.airportId !== newPoint?.airportId ||
-                                parseDate(currentPoint.arrivalTime) !== parseDate(newPoint?.arrivalTime) ||
-                                parseDate(currentPoint.departureTime) !== parseDate(newPoint?.departureTime)
-                            );
-                        });
-
-                    // Kiểm tra xem có sự thay đổi về transit point hay không
-                    let areTransitPointsChanged = checkdataflight || checkdataflighttransitpoint;
-                    return areTransitPointsChanged;
-                };
-
-                // Check if the data has changed
-                // console.log(currentFlight)
-                // console.log(flightData)
-                if (currentFlight && !isDataChanged(currentFlight, flightData)) {
-                    alert("No changes detected. Data was not updated.");
-                    return;
-                }
-
-                const flightRes = await fetchWithToken(`${SERVER_API}/flights/all`);
-                const flights = await flightRes.json();
-                const existingFlight = flights.find(flight => flight.flightId === currentFlight.flightId);
-
-                if (existingFlight && existingFlight.transitPointList.length > 0) {
-                    const deletePromises = existingFlight.transitPointList.map(async (transit) => {
-                        await fetchWithToken(`${SERVER_API}/transitpoints/delete/${transit.transitId}`, {
-                            method: "DELETE",
-                        });
-                    });
-                    await Promise.all(deletePromises);
-                }
-
-                const putResponse = await fetchWithToken(`${SERVER_API}/flights/${currentFlight.flightId}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(flightData),
+                // Update
+                response = await fetchWithToken(`${SERVER_API}/flights/${currentFlight.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
                 });
-
-                if (!putResponse.ok) throw new Error("Error Updated.");
-                alert("Flight updated successfully!");
             } else {
-                const allFlightdata = allFlights;
-                const flightExists = allFlightdata.some(flight => flight.flightNumber === flightData.flightNumber);
-                if (flightExists) {
-                    alert("Flight number already exists.")
-                }
-
-                const postResponse = await fetchWithToken(`${SERVER_API}/flights/add`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(flightData),
+                // Create
+                response = await fetchWithToken(`${SERVER_API}/flights`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
                 });
-
-                if (!postResponse.ok) throw new Error("Error Add Flight.");
-                alert("Add Flight successful!");
             }
 
-            const updatedFlights = await (await fetchWithToken(`${SERVER_API}/flights/all`)).json();
-            const sortedFlights = updatedFlights.sort((a, b) => b.flightId - a.flightId);
-            setFlights(sortedFlights);
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Server error');
+            }
+
+            alert(currentFlight ? "Flight updated successfully!" : "Flight added successfully!");
+            // 3. Refresh data & cleanup UI
+            await fetchFlights();
             setShowForm(false);
             setShowTransitPointFields(false);
             setTransitPoints([]);
-        } catch (error) {
-            console.error("Lỗi xử lý handleSubmitForm:", error);
-            alert("ERROR Please Try Again!");
+        } catch (err) {
+            console.error("Flight submit error:", err);
+            alert(err.message || "An error occurred. Please try again.");
         }
     };
 
@@ -409,7 +336,7 @@ const Flightlist = () => {
 
                 <FlightListTable
                     currentFlights={currentFlights}
-                    flights={flights}
+                    airports={airports}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                 />

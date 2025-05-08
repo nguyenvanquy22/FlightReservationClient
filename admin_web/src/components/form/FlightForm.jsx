@@ -61,11 +61,14 @@ const FlightForm = ({
     };
 
     const handlePriceChange = (idx, val) => {
-        setSeatConfigs(prev => {
-            const copy = [...prev];
-            copy[idx] = { ...copy[idx], price: val };
-            return copy;
-        });
+        setSeatConfigs(prev =>
+            prev.map((sc, i) => {
+                if (i === idx) {
+                    return { ...sc, seatPrice: val };
+                }
+                return sc;
+            })
+        );
     };
 
     const onSubmit = e => {
@@ -74,17 +77,12 @@ const FlightForm = ({
         const payload = {
             flightNumber: f.flightNumber.value,
             airplaneId: parseInt(f.airplaneId.value, 10),
-            originAirportId: parseInt(f.departureAirportId.value, 10),
-            destinationAirportId: parseInt(f.arrivalAirportId.value, 10),
+            originAirportId: parseInt(f.originAirportId.value, 10),
+            destinationAirportId: parseInt(f.destinationAirportId.value, 10),
             departureTime: f.departureTime.value,
             arrivalTime: f.arrivalTime.value,
             status: f.status.value,
-            seatClassAirplaneFlights: seatConfigs
-                .filter(sc => sc.price)
-                .map(sc => ({
-                    seatClassAirplaneId: sc.seatClassAirplaneId,
-                    seatPrice: parseFloat(sc.price)
-                })),
+            seatConfigs: seatConfigs,
             transits: transitPoints
         };
         handleSubmitForm(payload);
@@ -127,7 +125,7 @@ const FlightForm = ({
 
                             <label>
                                 Departure Airport
-                                <select name="departureAirportId"
+                                <select name="originAirportId"
                                     defaultValue={currentFlight?.originAirport.id || ""}
                                     required>
                                     <option value="" disabled>Select Departure</option>
@@ -139,7 +137,7 @@ const FlightForm = ({
 
                             <label>
                                 Arrival Airport
-                                <select name="arrivalAirportId"
+                                <select name="destinationAirportId"
                                     defaultValue={currentFlight?.destinationAirport.id || ""}
                                     required>
                                     <option value="" disabled>Select Arrival</option>
@@ -154,12 +152,7 @@ const FlightForm = ({
                                 <input
                                     name="departureTime"
                                     type="datetime-local"
-                                    defaultValue={
-                                        currentFlight
-                                            ? new Date(currentFlight.departureTime)
-                                                .toISOString().slice(0, 16)
-                                            : ""
-                                    }
+                                    defaultValue={currentFlight?.departureTime || ''}
                                     required
                                 />
                             </label>
@@ -169,12 +162,7 @@ const FlightForm = ({
                                 <input
                                     name="arrivalTime"
                                     type="datetime-local"
-                                    defaultValue={
-                                        currentFlight
-                                            ? new Date(currentFlight.arrivalTime)
-                                                .toISOString().slice(0, 16)
-                                            : ""
-                                    }
+                                    defaultValue={currentFlight?.arrivalTime || ""}
                                     required
                                 />
                             </label>

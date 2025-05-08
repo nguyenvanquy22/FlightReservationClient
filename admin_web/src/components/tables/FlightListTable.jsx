@@ -1,7 +1,10 @@
 import React from 'react';
 import './styles/FlightListTable.scss';
 
-const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
+const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
+
+    console.log('Airports:', airports);
+
     return (
         <div className="table-responsive">
             <table className="flight-table">
@@ -11,7 +14,7 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                         <th colSpan="4">Departure</th>
                         <th colSpan="4">Arrival</th>
                         <th rowSpan="2">Status</th>
-                        <th colSpan="2">Transit Points</th>
+                        <th colSpan="3">Transit Points</th>
                         <th rowSpan="2">Actions</th>
                     </tr>
                     <tr>
@@ -27,6 +30,7 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                         <th>Arrival City</th>
                         <th>Arrival Country</th>
                         <th>Arrival Time</th>
+                        <th>Transit Airport</th>
                         <th>Arrival</th>
                         <th>Departure</th>
                     </tr>
@@ -36,7 +40,8 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                         <tr key={flight.id}>
                             <td>{flight.flightNumber}</td>
                             <td>{flight.airplane?.model || 'Unknown'}</td>
-                            <td>{flight.airplane?.capacity || 'Unknown'}</td>
+                            <td>{flight.airplane?.seatClassAirplanes
+                                .reduce((sum, t) => sum + t.rowCount * t.columnCount, 0) || 'Unknown'}</td>
                             <td>{flight.airplane?.airline?.name || 'Unknown'}</td>
 
                             {/* Departure Info */}
@@ -58,8 +63,7 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                                 {flight?.transits?.length > 0 ? (
                                     flight.transits.map(point => (
                                         <div key={point?.id}>
-                                            {point.airport?.airportName} ({point.airport?.city}, {point.airport?.country}) -
-                                            Arrival: {new Date(point?.arrivalTime).toLocaleString()}
+                                            {airports?.find(airport => point.airportId === airport.id)?.name}
                                         </div>
                                     ))
                                 ) : (
@@ -70,8 +74,18 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
                                 {flight?.transits?.length > 0 ? (
                                     flight.transits.map(point => (
                                         <div key={point?.id}>
-                                            {point.airport?.airportName} ({point.airport?.city}, {point.airport?.country}) -
-                                            Departure: {new Date(point?.departureTime).toLocaleString()}
+                                            {new Date(point?.arrivalTime).toLocaleString()}
+                                        </div>
+                                    ))
+                                ) : (
+                                    'None'
+                                )}
+                            </td>
+                            <td>
+                                {flight?.transits?.length > 0 ? (
+                                    flight.transits.map(point => (
+                                        <div key={point?.id}>
+                                            {new Date(point?.departureTime).toLocaleString()}
                                         </div>
                                     ))
                                 ) : (
@@ -81,7 +95,7 @@ const FlightListTable = ({ flights, currentFlights, onEdit, onDelete }) => {
 
                             <td>
                                 <button onClick={() => onEdit(flight)} className="edit_button">Edit</button>
-                                <button onClick={() => onDelete(flight.flightId)} className="delete_button">Delete</button>
+                                <button onClick={() => onDelete(flight.id)} className="delete_button">Delete</button>
                             </td>
                         </tr>
                     ))}
