@@ -5,18 +5,19 @@ import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 
 const DepartureFlight = ({ flight }) => {
-
     const [isSelected, setIsSelected] = useState(false);
-    const { booking, isConfirm, formatTime, calculateDuration,
-        formatDate, calculateDaysOvernight, formatPrice, isRoundTrip, isRoundTrip1, setIsRoundTrip1, place1, place2, setPlace1, setPlace2, setFlights, filterFlights, flights, searchTerm, searchTermReturn } = useContext(StoreContext);
-    const chosenFlight = (flight) => {
-        // console.log(flight);
-        booking(flight);
-        isConfirm(flight);
+    const { selectFlight, selectSeatOption, formatTime, calculateDuration, place,
+        formatDate, calculateDaysOvernight, formatPrice, isRoundTrip,
+        isRoundTrip1, setIsRoundTrip1, place1, place2, searchReturnFlights
+    } = useContext(StoreContext);
+
+    const chosenFlight = (flight, seatOption) => {
+        selectFlight(flight);
+        selectSeatOption(seatOption);
     };
 
     const handleSelect = () => {
-        setIsSelected(!isSelected); // Toggle between true and false
+        setIsSelected(!isSelected);
     };
 
     const handleAround = () => {
@@ -24,7 +25,7 @@ const DepartureFlight = ({ flight }) => {
         var place11 = place1;
         var place22 = place2;
         setTimeout(() => {
-            searchTermReturn(place22, place11, sessionStorage.getItem('returnDate'));
+            searchReturnFlights(place22, place11, sessionStorage.getItem('returnDate'));
             chosenFlight(flight);
         }, 500);
     }
@@ -47,7 +48,7 @@ const DepartureFlight = ({ flight }) => {
                     </div>
                     <div className="time">
                         {calculateDuration(flight.departureTime, flight.arrivalTime)}
-                        {flight.transitPointList && flight.transitPointList.length > 0 ? (
+                        {flight.transits && flight.transits.length > 0 ? (
                             <div>{`o----------o--------->`}</div> // Có transit point
                         ) : (
                             <div>{`o--------------------->`}</div> // Không có transit point
@@ -69,144 +70,139 @@ const DepartureFlight = ({ flight }) => {
                 </div>
             </div>
             <div className={`ticket-show ${isSelected ? 'ticket-show-active' : ''}`}>
-
                 {/* Hiển thị hoặc ẩn div "selected" */}
-                <div className="selected">
+                {flight.seatOptions.map((option, index) => (
+                    <div key={option.id} className="selected">
+                        <div className="seat">
+                            <img src={assets.seat}></img>
+                            <p className="hightline">{option.seatClassName} class</p>
+                        </div>
+                        <hr />
+                        <div className="price">
+                            <p className="hightline"> {formatPrice(option?.seatPrice || 0)} VND</p>
+                            <p>Price / Pax</p>
+                        </div>
+                        <div className="aircraft">
+                            <img className="svg" src={assets.aircraftIcon1}></img>
+                            <p> {flight.airplane.airline.name}</p>
+                        </div>
+                        <div className="departure-info">
+                            <p className="place">{formatTime(flight.departureTime)} - {formatDate(flight.departureTime)}</p>
+                            <p> {flight.originAirport.name}</p>
+                            <p>({flight.originAirport.city}-{flight.originAirport.country})</p>
+                        </div>
+                        <div className="arrival-info">
+                            <p className="place">{formatTime(flight.arrivalTime)} - {formatDate(flight.arrivalTime)}  </p>
+                            <p>{flight.destinationAirport.name}</p>
+                            <p>({flight.destinationAirport.city}-{flight.destinationAirport.country})</p>
+                        </div>
+                        <div className="cabin-bag">
+                            <img className="bag" src={assets.bag}></img>
+                            <p>Cabin Baggage 7kg</p>
+                        </div>
+                        {!isRoundTrip1 ? (
+                            !isRoundTrip ? (
 
-                    <div className="seat">
-                        <img src={assets.seat}></img>
-                        <p className="hightline">Economy Sever</p>
-                    </div>
-                    <hr />
-                    <div className="price">
-                        <p className="hightline"> {formatPrice(flight?.basePrice || 0)} VND</p>
-                        <p>Price / Pax</p>
-                    </div>
-                    <div className="aircraft">
-                        <img className="svg" src={assets.aircraftIcon1}></img>
-                        <p> {flight.airplane.airline.name}</p>
-                    </div>
-                    <div className="departure-info">
-                        <p className="place">{formatTime(flight.departureTime)} - {formatDate(flight.departureTime)}</p>
-                        <p> {flight.originAirport.name}</p>
-                        <p>({flight.originAirport.city}-{flight.originAirport.country})</p>
-                    </div>
-                    <div className="arrival-info">
-                        <p className="place">{formatTime(flight.arrivalTime)} - {formatDate(flight.arrivalTime)}  </p>
-                        <p>{flight.destinationAirport.name}</p>
-                        <p>({flight.destinationAirport.city}-{flight.destinationAirport.country})</p>
-                    </div>
-                    <div className="cabin-bag">
-                        <img className="bag" src={assets.bag}></img>
-                        <p>Cabin Baggage 7kg</p>
-                    </div>
-                    {!isRoundTrip1 ? (
-                        !isRoundTrip ? (
+                                <Link to="/confirm">
+                                    <button
+                                        onClick={() => chosenFlight(flight, option)}
+                                        className="book"
+                                    >
+                                        Book Now
+                                    </button>
+                                </Link>
 
-                            <Link to="/confirm">
-                                <button onClick={() =>
-                                    chosenFlight(flight)
-
-
-                                } className="book">
-                                    Book Now
-                                </button>
-                            </Link>
-
+                            ) : (
+                                <Link to="/confirm">
+                                    <button onClick={() => chosenFlight(flight, option)} className="book">
+                                        Book The Return
+                                    </button>
+                                </Link>
+                            )
                         ) : (
-                            <Link to="/confirm">
-                                <button onClick={() => chosenFlight(flight)} className="book">
-                                    Book The Return
-                                </button>
-                            </Link>
-                        )
-                    ) : (
-                        <button onClick={() => {
-                            sessionStorage.setItem('departureDate', flight.departureTime)
-                            console.log("departureDate", flight.departureTime)
-                            console.log("departureDate", sessionStorage.setItem('departureDateDontChose', flight.departureTime))
-                            handleAround();
-                        }
-                        } className="book">
-                            Book The Departure
-                        </button>
-                    )}
+                            <button onClick={() => {
+                                sessionStorage.setItem('departureDate', flight.departureTime)
+                                console.log("departureDate", flight.departureTime)
+                                console.log("departureDate", sessionStorage.setItem('departureDateDontChose', flight.departureTime))
+                                handleAround();
+                            }
+                            } className="book">
+                                Book The Departure
+                            </button>
+                        )}
 
-                </div>
+                    </div>
+                ))}
                 {/* Hiển thị bảng TransitPoint nếu có */}
-                {flight.transitPointList && flight.transitPointList.length > 0 && (
-
+                {flight.transits && flight.transits.length > 0 && (
                     <div className="transit-points">
-                        {flight.transitPointList.map((transit, index) => (
+                        {flight.transits.map((transit, index) => (
+                            <div key={index} className="transit-point">
 
-                            <div key={index} className="left-transit-points">
-                                <div className="time">
-                                    <div>
-                                        <p>{formatTime(flight.departureTime)}</p>
-                                        <p>{formatDate(flight.departureTime)}</p>
-                                    </div>
-                                </div>
-                                <div className="arrow">
-                                    {`o`} <hr /> v
-                                </div>
-                                <div>
+                                <div className="left-transit-point">
                                     <div className="time">
-                                        <p>{formatTime(transit.arrivalTime)}</p>
-                                        <p>{formatDate(transit.arrivalTime)}</p>
-                                    </div>
-                                </div>
-                                <br />
-                                <div className="time">
-                                    <div className="time">
-                                        <p>{formatTime(transit.departureTime)}</p>
-                                        <p>{formatDate(transit.departureTime)}</p>
-                                    </div>
-                                </div>
-                                <div className="arrow">
-                                    {`o`} <hr /> v
-                                </div>
-                                <div className="time">
-                                    <p>{formatTime(flight.arrivalTime)} </p>
-                                    <p>{formatDate(flight.arrivalTime)}</p>
-                                </div>
-                            </div>
-                        ))}
-
-                        {flight.transitPointList.map((transit, index) => (
-                            <div key={index} className="right-transit-points">
-                                <div className="place">
-                                    <div>
-                                        <p>{flight.originAirport.name}</p>
-                                        <p>{flight.originAirport.city} - {flight.originAirport.country}</p>
-                                    </div>
-                                    <div className="time-place">
-                                        <img src={assets.clock} />
-                                        <p>{calculateDuration(flight.departureTime, transit.arrivalTime)}</p>
-                                    </div>
-                                    <div>
                                         <div>
-                                            <p>{transit.airport.name}</p>
-                                            <p>{transit.airport.city} - {transit.airport.country}</p>
+                                            <p>{formatTime(flight.departureTime)}</p>
+                                            <p>{formatDate(flight.departureTime)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="arrow">
+                                        {`o`} <hr /> v
+                                    </div>
+                                    <div>
+                                        <div className="time">
+                                            <p>{formatTime(transit.arrivalTime)}</p>
+                                            <p>{formatDate(transit.arrivalTime)}</p>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div className="time">
+                                        <div className="time">
+                                            <p>{formatTime(transit.departureTime)}</p>
+                                            <p>{formatDate(transit.departureTime)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="arrow">
+                                        {`o`} <hr /> v
+                                    </div>
+                                    <div className="time">
+                                        <p>{formatTime(flight.arrivalTime)} </p>
+                                        <p>{formatDate(flight.arrivalTime)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="right-transit-point">
+                                    <div className="place">
+                                        <div>
+                                            <p>{flight.originAirport?.name}</p>
+                                            <p>{flight.originAirport?.city} - {flight.originAirport?.country}</p>
+                                        </div>
+                                        <div className="time-place">
+                                            <img src={assets.clock} />
+                                            <p>{calculateDuration(flight.departureTime, transit.arrivalTime)}</p>
+                                        </div>
+                                        <div>
+                                            <p>{place.find((airport) => airport.id === transit.airportId)?.name}</p>
+                                            <p>{place.find((airport) => airport.id === transit.airportId)?.city} - {place.find((airport) => airport.id === transit.airportId)?.country}</p>
+                                        </div>
+                                    </div>
+                                    <div className="place">
+                                        <div>
+                                            <p>{place.find((airport) => airport.id === transit.airportId)?.name}</p>
+                                            <p>{place.find((airport) => airport.id === transit.airportId)?.city} - {place.find((airport) => airport.id === transit.airportId)?.country}</p>
+                                        </div>
+                                        <div className="time-place">
+                                            <img src={assets.clock} />
+                                            <p>{calculateDuration(transit.departureTime, flight.arrivalTime)}</p>
+                                        </div>
+                                        <div>
+                                            <p>{flight.destinationAirport?.name}</p>
+                                            <p>{flight.destinationAirport?.city} - {flight.destinationAirport?.country}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="place">
-                                    <div>
-                                        <div>
-                                            <p>{transit.airport.name}</p>
-                                            <p>{transit.airport.city} - {transit.airport.country}</p>
-                                        </div>
-                                    </div>
-                                    <div className="time-place">
-                                        <img src={assets.clock} />
-                                        <p>{calculateDuration(transit.departureTime, flight.arrivalTime)}</p>
-                                    </div>
-                                    <div>
-                                        <p>{flight.destinationAirport.name}</p>
-                                        <p>{flight.destinationAirport.city} - {flight.destinationAirport.country}</p>
-                                    </div>
-                                </div>
                             </div>
+
                         ))}
                     </div>
                 )}

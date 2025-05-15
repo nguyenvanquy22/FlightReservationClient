@@ -17,7 +17,7 @@ const OrderFlight = () => {
     const [departureDate, setDepartureDate] = useState('');
     const [returnDate, setReturnDate] = useState('');
 
-    const { place, searchTerm, place1, place2, isRoundTrip, setIsRoundTrip, setIsRoundTrip1, searchTermReturn } = useContext(StoreContext);
+    const { place, searchFlights, place1, place2, isRoundTrip, setIsRoundTrip, setIsRoundTrip1, searchTermReturn } = useContext(StoreContext);
 
     const handleFlightChange = (e) => {
         setFlight(e);
@@ -28,7 +28,6 @@ const OrderFlight = () => {
         setDestination(e);
         setShowSuggestions(false);
     }
-
 
     function useOutsideAlerter(ref, handler) {
         useEffect(() => {
@@ -51,7 +50,7 @@ const OrderFlight = () => {
         // setFilteredFlights(result); 
         sessionStorage.setItem('departureDate', departureDate);
         sessionStorage.setItem('returnDate', returnDate);
-        searchTerm(flight, destination, departureDate, returnDate);
+        searchFlights(flight, destination, departureDate, returnDate);
     };
 
 

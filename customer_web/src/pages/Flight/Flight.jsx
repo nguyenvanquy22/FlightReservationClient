@@ -31,7 +31,6 @@ const Flight = () => {
 
     const filterFlights = () => {
         if (selectedTimes.length === 0) {
-
             return newFlights; // Nếu không chọn gì thì hiển thị tất cả chuyến bay
         }
 

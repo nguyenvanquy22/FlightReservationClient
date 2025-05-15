@@ -107,20 +107,24 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
         height: 0px;
         transition: height 0.25s ease;
+        width: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
 
         .selected {
+            flex: 0 0 auto;
+            width: 300px;
             position: relative;
             overflow: hidden;
-            border: none;
-            height: 0px;
-            width: 300px;
+            height: 0;
             transition: height 0.25s ease, padding 0.25s ease;
             border-radius: 10px;
             border: 1px solid #E5E5E5;
             background-color: white;
-            padding: 0px 20px;
+            padding: 0 20px;
             text-align: left;
 
             &:hover {
@@ -238,28 +242,24 @@
             }
         }
 
-
         .transit-points {
-            opacity: 1;
-            position: relative;
+            flex: 0 0 auto;
             overflow: hidden;
-            border: none;
-            height: 0;
             width: 370px;
             transition: height 0.25s ease, padding 0.25s ease;
-            // border-radius: 10px;
-            // background-color: white;
-            text-align: left;
-            display: flex;
-            justify-content: left;
 
-            p {
-                font-size: 20px;
-                font-weight: 600;
-                color: #59595B;
+            .transit-point {
+                display: flex;
+                text-align: left;
+
+                p {
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #59595B;
+                }
             }
 
-            .left-transit-points {
+            .transit-point .left-transit-point {
                 width: 100px;
 
                 .time {
@@ -289,7 +289,7 @@
                 }
             }
 
-            .right-transit-points {
+            .transit-point .right-transit-point {
                 .place {
                     height: 200px;
                     margin-bottom: 10px;

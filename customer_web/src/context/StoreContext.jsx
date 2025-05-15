@@ -1,52 +1,78 @@
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
-import { fetchWithToken } from '../components/fetchWithToken';
 
+// Create separate contexts for different concerns
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-
     const url = 'http://localhost:8080';
-    const [isRoundTrip, setIsRoundTrip] = useState(false);
-    const [isRoundTrip1, setIsRoundTrip1] = useState(false);
-    const [token, setToken] = useState('');
-    const [place, setPlace] = useState([]);
-    const [place1, setPlace1] = useState('');
-    const [place2, setPlace2] = useState('');
-    const [flights, setFlights] = useState([]);
-    const [order, setOrder] = useState([]);
-    const [confirm, setConfirm] = useState([]);
-    const [adults, setAdults] = useState(1)
-    const [newFlights, setNewFlights] = useState([]);
-    const [searchedFlights, setSearchedFlights] = useState([]);
-    const [user, setUser] = useState({});
-    const [myorder, setMyorder] = useState([]);
-    const [urlPaymen, setUrlPaymen] = useState("");
-    const [priceRoundTrip, setPriceRoundTrip] = useState(0);
-    // const [myTicket, setMyTicket] = useState({});
-    // const [selectedFlight, setSelectedFlight] = useState({});
 
-    const login = async () => {
+    // User and Authentication State
+    const [token, setToken] = useState(localStorage.getItem('customerToken') || '');
+    const [user, setUser] = useState({});
+
+    // Flight Search State
+    const [place, setPlace] = useState([]);  // List of airports
+    const [place1, setPlace1] = useState(''); // Origin
+    const [place2, setPlace2] = useState(''); // Destination
+    const [isRoundTrip, setIsRoundTrip] = useState(false);
+    const [departureDate, setDepartureDate] = useState('');
+    const [returnDate, setReturnDate] = useState('');
+
+    // Flight Lists
+    const [flights, setFlights] = useState([]);
+    const [searchedFlights, setSearchedFlights] = useState([]);
+    const [newFlights, setNewFlights] = useState([]);
+
+    // Booking State
+    const [selectedDepartureFlight, setSelectedDepartureFlight] = useState(null);
+    const [selectedReturnFlight, setSelectedReturnFlight] = useState(null);
+    const [selectedSeatOption, setSelectedSeatOption] = useState(null);
+    const [returnSeatOption, setReturnSeatOption] = useState(null);
+    const [adults, setAdults] = useState(1);
+    const [passengerDetails, setPassengerDetails] = useState([]);
+
+    // Order and Payment
+    const [urlPayment, setUrlPayment] = useState('');
+    const [myOrders, setMyOrders] = useState([]);
+    const [priceRoundTrip, setPriceRoundTrip] = useState(0);
+
+    // Authentication Functions
+    const login = async (email, password) => {
         try {
             const response = await axios.post(`${url}/api/auth/login`, {
-                email: ''
+                email,
+                password
             });
-            setToken(response.data.token);
+            const { token, userId } = response.data;
+            localStorage.setItem('customerToken', token);
+            localStorage.setItem('userId', userId);
+            setToken(token);
+            await fetchUser(userId, token);
+            return true;
         } catch (error) {
             console.error('Error logging in:', error);
+            return false;
         }
-    }
+    };
 
+    const logout = () => {
+        localStorage.removeItem('customerToken');
+        localStorage.removeItem('userId');
+        setToken('');
+        setUser({});
+    };
+
+    // Data Fetching Functions
     const fetchPlaceList = async () => {
         try {
-            const token = localStorage.getItem("customerToken"); // Lấy token từ localStorage
             if (!token) {
                 console.error("Token is missing");
                 return;
             }
             const response = await axios.get(`${url}/api/airports`, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Kèm token vào header
+                    Authorization: `Bearer ${token}`,
                 },
             });
             setPlace(response.data.data);
@@ -57,14 +83,13 @@ const StoreContextProvider = (props) => {
 
     const fetchFlightsList = async () => {
         try {
-            const token = localStorage.getItem("customerToken"); // Lấy token từ localStorage
             if (!token) {
                 console.error("Token is missing");
                 return;
             }
             const response = await axios.get(`${url}/api/flights`, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Kèm token vào header
+                    Authorization: `Bearer ${token}`,
                 },
             });
             setFlights(response.data.data);
@@ -73,163 +98,288 @@ const StoreContextProvider = (props) => {
         }
     };
 
-    const fetchUser = async () => {
-        // if(token){
+    const fetchUser = async (userId = localStorage.getItem('userId'), authToken = token) => {
         try {
-            const token = localStorage.getItem("customerToken");
-            const userId = localStorage.getItem("userId");
-            if (!token) {
-                console.error("Token is missing");
+            if (!authToken || !userId) {
+                console.error("Token or userId is missing");
                 return;
             }
             const response = await axios.get(`${url}/api/users/${userId}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${authToken}`,
                 },
             });
             setUser(response.data.data);
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
-        // }
     };
 
-    const fetchMyorder = async () => {
-        const token = localStorage.getItem("customerToken");
-        if (!token) {
-            console.error("Token is missing");
-            return;
-        }
-        if (localStorage.getItem("userId")) {
-            let i = 1;
-            while (i !== 0) {
-                try {
-                    const response = await axios.get(`${url}/api/bookings/${i}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    if (response.data.data !== null) {
-                        setMyorder((prevOrders) => [...prevOrders, response.data]);
-                    }
-                    i++;
-                } catch (error) {
-                    console.error("Error fetching my orders:", error);
-                    i = 0;
-                }
+    const fetchMyOrders = async () => {
+        try {
+            const authToken = localStorage.getItem("customerToken");
+            const userId = localStorage.getItem("userId");
+
+            if (!authToken || !userId) {
+                console.error("Token or userId is missing");
+                return;
             }
+
+            // Clear previous orders
+            setMyOrders([]);
+
+            const response = await axios.get(`${url}/api/bookings/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (response.data && Array.isArray(response.data.data)) {
+                setMyOrders(response.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching orders:", error);
         }
     };
 
+    // Flight Search Functions
+    const searchFlights = (origin, destination, departureDate) => {
+        setPlace1(origin);
+        setPlace2(destination);
+        setDepartureDate(departureDate);
 
-    const countAdult = (count) => {
-        setAdults(count)
-        console.log("Số lượng: ", adults)
-    }
-
-    const formatPrice = (price) => {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    const searchTerm = (place1, place2, departureDate, returnDate) => {
-        setPlace1(place1);
-        setPlace2(place2);
-        console.log("địa chỉ", place1, place2);
-        let filter = [];
+        let filteredFlights;
         const today = new Date();
-        if (departureDate === "") {
-            filter = flights.filter(flight =>
-                flight.originAirport.city === place1 &&
-                flight.destinationAirport.city === place2
+
+        if (!departureDate) {
+            filteredFlights = flights.filter(flight =>
+                flight.originAirport.city === origin &&
+                flight.destinationAirport.city === destination
                 // && new Date(flight.departureTime) > today
             );
         } else {
-            filter = flights.filter(flight =>
-                flight.originAirport.city === place1 &&
-                flight.destinationAirport.city === place2 &&
-                flight.departureTime.includes(departureDate)
+            // Format the date to match the format used in flight.departureTime
+            const formattedDate = departureDate.split('T')[0];
+            filteredFlights = flights.filter(flight =>
+                flight.originAirport.city === origin &&
+                flight.destinationAirport.city === destination &&
+                flight.departureTime.includes(formattedDate)
             );
         }
 
-        setNewFlights(filter)
-        setSearchedFlights(filter)
-        console.log("Chuyến bay mới:", newFlights)
-    }
+        setNewFlights(filteredFlights);
+        setSearchedFlights(filteredFlights);
+    };
 
-    const searchTermReturn = (place1, place2, departureDate) => {
-        setPlace1(place1);
-        setPlace2(place2);
+    const searchReturnFlights = (origin, destination, returnDate) => {
+        setReturnDate(returnDate);
 
-        // console.log("Ngày", (departureDate))
-        let filter = [];
-        const today = new Date();
-        if (departureDate == "") {
-            console.log("Ngày hiện sau đó:", sessionStorage.getItem('departureDate'));
-            console.log("Ngày khởi hành:", sessionStorage.getItem('departureDateDontChose'));
-            // new Date(flight.departureTime) > sessionStorage.getItem('departureDate')
-            filter = flights.filter(flight => flight.departureAirport.city === place1 && flight.arrivalAirport.city === place2 && new Date(flight.departureTime) > today && new Date(flight.departureTime) > new Date(sessionStorage.getItem('departureDateDontChose')));
+        let filteredFlights;
+        const departureDateTime = new Date(selectedDepartureFlight?.arrivalTime);
+
+        if (!returnDate) {
+            filteredFlights = flights.filter(flight =>
+                flight.originAirport.city === destination &&
+                flight.destinationAirport.city === origin &&
+                new Date(flight.departureTime) > departureDateTime
+            );
         } else {
-            console.log("Ngày đi về:", (departureDate))
-            console.log("Ngày khởi hành:", sessionStorage.getItem('departureDate'));
-            filter = flights.filter(flight => flight.departureAirport.city === place1 && flight.arrivalAirport.city === place2 && flight.departureTime.includes(departureDate));
+            const formattedDate = returnDate.split('T')[0];
+            filteredFlights = flights.filter(flight =>
+                flight.originAirport.city === destination &&
+                flight.destinationAirport.city === origin &&
+                flight.departureTime.includes(formattedDate)
+            );
         }
 
-        setNewFlights(filter)
-        setSearchedFlights(filter)
-        console.log("Chuyến bay mới:", newFlights)
-    }
+        setNewFlights(filteredFlights);
+        setSearchedFlights(filteredFlights);
+    };
 
-
-    const filterStop = (stop) => {
-        if (stop === 0) {
-            setNewFlights(searchedFlights.filter(flight => Array.isArray(flight.transitPointList) && flight.transitPointList.length === 0));
-        }
-        if (stop === 1) {
-            setNewFlights(searchedFlights.filter(flight => Array.isArray(flight.transitPointList) && flight.transitPointList.length > 0));
-        }
-        if (stop === 2) {
+    // Filter Functions
+    const filterByStops = (stopCount) => {
+        if (stopCount === 0) {
+            setNewFlights(searchedFlights.filter(flight =>
+                !flight.transits || flight.transits.length === 0
+            ));
+        } else if (stopCount === 1) {
+            setNewFlights(searchedFlights.filter(flight =>
+                flight.transits && flight.transits.length > 0
+            ));
+        } else {
             setNewFlights(searchedFlights);
         }
-    }
+    };
 
+    const filterByPrice = (minPrice, maxPrice) => {
+        setNewFlights(searchedFlights.filter(flight => {
+            // Find the cheapest seat option
+            const cheapestSeat = flight.seatOptions.reduce((min, option) =>
+                option.seatPrice < min.seatPrice ? option : min,
+                flight.seatOptions[0]);
 
-    const booking = (flight) => {
-        console.log("Chuyến bay được đặt:", typeof (flight), flight);
-        setOrder(prevOrders => {
-            const isFlightAlreadyOrdered = prevOrders.some(orderFlight => orderFlight.flightId === flight.flightId);
-            if (!isFlightAlreadyOrdered) {
-                return [...prevOrders, flight];
+            return cheapestSeat && cheapestSeat.seatPrice >= minPrice && cheapestSeat.seatPrice <= maxPrice;
+        }));
+    };
+
+    // Selection and Booking Functions
+    const selectFlight = (flight, isReturn = false) => {
+        if (isReturn) {
+            setSelectedReturnFlight(flight);
+        } else {
+            setSelectedDepartureFlight(flight);
+        }
+    };
+
+    const selectSeatOption = (seatOption, isReturn = false) => {
+        if (isReturn) {
+            setReturnSeatOption(seatOption);
+        } else {
+            setSelectedSeatOption(seatOption);
+        }
+    };
+
+    const updatePassengerCount = (count) => {
+        const newCount = Math.max(1, count); // Ensure at least 1 passenger
+        setAdults(newCount);
+
+        // Initialize passenger details array with the right number of passengers
+        setPassengerDetails(prevDetails => {
+            const newDetails = [...prevDetails];
+
+            // Add new passengers if needed
+            while (newDetails.length < newCount) {
+                newDetails.push({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    phoneNumber: '',
+                    passport: '',
+                    nationality: ''
+                });
             }
-            return prevOrders;
+
+            // Remove extra passengers if count decreased
+            if (newDetails.length > newCount) {
+                return newDetails.slice(0, newCount);
+            }
+
+            return newDetails;
         });
     };
 
-    const isConfirm = (flight) => {
-        setConfirm(prevConfirm => {
-            const isFlightAlreadyConfirmed = prevConfirm.some(orderFlight => orderFlight.flightId === flight.flightId);
-            if (!isFlightAlreadyConfirmed) {
-                return [...prevConfirm, flight];
+    const updatePassengerDetail = (index, field, value) => {
+        setPassengerDetails(prevDetails => {
+            const newDetails = [...prevDetails];
+            if (!newDetails[index]) {
+                newDetails[index] = {};
             }
-            return prevConfirm;
-        })
-    }
+            newDetails[index][field] = value;
+            return newDetails;
+        });
+    };
 
-    // const isConfirm = (flight) => {
-    //     setConfirm(prevConfirm => {
-    //         const isFlightAlreadyConfirmed = prevConfirm.some(orderFlight => orderFlight.flightId === flight.flightId);
-    //         if (!isFlightAlreadyConfirmed) {
-    //             return [flight];
-    //         }
-    //         return prevConfirm;
-    //     })
-    // }
+    const calculateTotalPrice = () => {
+        if (!selectedDepartureFlight || !selectedSeatOption) {
+            return 0;
+        }
 
+        let total = selectedSeatOption.seatPrice * adults;
+
+        if (isRoundTrip && selectedReturnFlight && returnSeatOption) {
+            // Apply 20% discount for round trip
+            total += returnSeatOption.seatPrice * adults;
+            total = total * 0.8;
+        }
+
+        return total;
+    };
+
+    // Booking Submission
+    const submitBooking = async () => {
+        try {
+            const authToken = localStorage.getItem("customerToken");
+            if (!authToken) {
+                console.error("Token is missing");
+                return null;
+            }
+
+            // Validate required booking data
+            if (!selectedDepartureFlight || !selectedSeatOption || passengerDetails.length === 0) {
+                console.error("Missing required booking information");
+                return null;
+            }
+
+            // Construct booking data
+            const bookingData = {
+                userId: user.id,
+                flights: [
+                    {
+                        flightId: selectedDepartureFlight.id,
+                        seatOptionId: selectedSeatOption.id
+                    }
+                ],
+                passengers: passengerDetails.map(p => ({
+                    firstName: p.firstName,
+                    lastName: p.lastName,
+                    email: p.email || user.email,
+                    phoneNumber: p.phoneNumber || user.phoneNumber,
+                    passport: p.passport,
+                    nationality: p.nationality
+                })),
+                totalPrice: calculateTotalPrice()
+            };
+
+            // Add return flight if applicable
+            if (isRoundTrip && selectedReturnFlight && returnSeatOption) {
+                bookingData.flights.push({
+                    flightId: selectedReturnFlight.id,
+                    seatOptionId: returnSeatOption.id
+                });
+            }
+
+            const response = await axios.post(`${url}/api/bookings`, bookingData, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            });
+
+            console.log("Booking successful:", response.data.data);
+            const { id, message, paymentUrl } = response.data.data;
+            setUrlPayment(paymentUrl);
+
+            // Open payment window
+            if (paymentUrl) {
+                const width = 600;
+                const height = 400;
+                const left = window.screenX + (window.innerWidth / 2) - (width / 2);
+                const top = window.screenY + (window.innerHeight / 2) - (height / 1);
+                window.open(paymentUrl, "PaymentWindow", `width=${width},height=${height},top=${top},left=${left}`);
+            }
+
+            return response.data.data;
+        } catch (error) {
+            console.error("Error making booking:", error);
+            return null;
+        }
+    };
+
+    // Utility Functions
+    const formatPrice = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
 
     const formatTime = (timeString) => {
         const date = new Date(timeString);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     };
 
+    const formatDate = (timeString) => {
+        const date = new Date(timeString);
+        return date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
 
     const calculateDuration = (departureTime, arrivalTime) => {
         const departureDate = new Date(departureTime);
@@ -241,159 +391,96 @@ const StoreContextProvider = (props) => {
         return `${hours}h ${minutes}m`;
     };
 
-    const formatDate = (timeString) => {
-        const date = new Date(timeString);
-        return date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
-    };
-
     const calculateDaysOvernight = (departureTime, arrivalTime) => {
         const departureDate = new Date(departureTime);
         const arrivalDate = new Date(arrivalTime);
 
-        // Lấy ngày khởi hành và ngày hạ cánh
+        // Get departure and arrival dates only (without time)
         const departureDateOnly = new Date(departureDate.getFullYear(), departureDate.getMonth(), departureDate.getDate());
         const arrivalDateOnly = new Date(arrivalDate.getFullYear(), arrivalDate.getMonth(), arrivalDate.getDate());
 
-        let days = 0;
+        // Calculate days difference
+        const daysDiff = Math.floor((arrivalDateOnly - departureDateOnly) / (1000 * 60 * 60 * 24));
 
-        // Kiểm tra xem chuyến bay có qua đêm không
-        if (arrivalDate > departureDate) {
-            days += (arrivalDateOnly - departureDateOnly) / (1000 * 60 * 60 * 24);
-        }
-
-        return Math.floor(days);
+        return daysDiff;
     };
 
-    const postBooking = async (data) => {
-        try {
-            const token = localStorage.getItem("customerToken");
-            if (!token) {
-                console.error("Token is missing");
-                return;
-            }
-
-            const response = await axios.post(`${url}/api/bookings`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                withCredentials: true,
-            });
-
-            console.log("Booking successful:", response.data.data);
-            const { id, message, paymentUrl } = response.data.data;
-            console.log("Booking ID:", id);
-            console.log("Message:", message);
-            console.log("Payment URL:", paymentUrl);
-            setUrlPaymen(paymentUrl);
-
-            const width = 600;
-            const height = 400;
-            const left = window.screenX + (window.innerWidth / 2) - (width / 2);
-            const top = window.screenY + (window.innerHeight / 2) - (height / 1);
-            window.open(paymentUrl, "PopupWindow", `width=${width},height=${height},top=${top},left=${left}`);
-        } catch (error) {
-            console.error("Error making booking:", error);
+    // Initialize data on component mount
+    useEffect(() => {
+        if (token) {
+            fetchPlaceList();
+            fetchFlightsList();
+            fetchUser();
+            fetchMyOrders();
         }
-    };
+    }, [token]);
 
-
-    const formatCurrency = (num) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    };
-
-    const totalPriceRoundTrip = (flight, ad) => {
-        if (!isRoundTrip) {
-            return flight * ad;
-        }
-        setPriceRoundTrip(flight * 0.80);
-        return flight * ad * 0.80;
-    }
-
-    // setPriceRoundTrip(totalPriceRoundTrip);
-
-    useEffect(() => {
-        fetchPlaceList();
-        fetchFlightsList();
-        fetchUser();
-        fetchMyorder();
-    }, []);
-
-    useEffect(() => {
-        // console.log("Đơn hàng hiện tại:", typeof (order), order);
-    }, [order]);
-
-    useEffect(() => {
-        // console.log("Đơn hàng hiện tại:", typeof (myorder), myorder);
-    }, [myorder]);
-
-    useEffect(() => {
-        // console.log("NewFlights:", typeof (newFlights), newFlights);
-    }, [newFlights]);
-
-    useEffect(() => {
-        // console.log("searchedFlights:", typeof (searchedFlights), searchedFlights);
-    }, [searchedFlights]);
-
-    useEffect(() => {
-        // console.log("searchedFlights:", typeof (searchedFlights), searchedFlights);
-    }, [flights]);
-
-    // useEffect(() => {
-    //     console.log("Địa chỉ 1:", place1);
-    // }, priceRoundTrip);
-
-    useEffect(() => {
-    }, [place1, place2]);
-
+    // Context value with all state and functions
     const contextValue = {
+        // State
         url,
         token,
-        flights,
-        newFlights,
+        user,
         place,
         place1,
         place2,
-        user,
-        order,
-        confirm,
-        adults,
-        urlPaymen,
-        myorder,
+        flights,
+        newFlights,
+        searchedFlights,
         isRoundTrip,
-        isRoundTrip1,
+        departureDate,
+        returnDate,
+        selectedDepartureFlight,
+        selectedReturnFlight,
+        selectedSeatOption,
+        returnSeatOption,
+        adults,
+        passengerDetails,
+        urlPayment,
+        myOrders,
         priceRoundTrip,
-        token,
-        fetchUser,
-        setUser,
+
+        // Authentication
+        login,
+        logout,
         setToken,
-        setPriceRoundTrip,
+
+        // Data Fetching
+        fetchUser,
+        fetchPlaceList,
+        fetchFlightsList,
+        fetchMyOrders,
+
+        // Flight Search and Filtering
         setPlace1,
         setPlace2,
         setIsRoundTrip,
-        setIsRoundTrip1,
-        fetchMyorder,
+        searchFlights,
+        searchReturnFlights,
+        filterByStops,
+        filterByPrice,
+
+        // Selection and Booking
+        selectFlight,
+        selectSeatOption,
+        updatePassengerCount,
+        updatePassengerDetail,
+        calculateTotalPrice,
+        submitBooking,
+
+        // Utility Functions
         formatPrice,
-        searchTerm,
-        searchTermReturn,
-        filterStop,
-        booking,
-        isConfirm,
         formatTime,
-        calculateDuration,
         formatDate,
-        calculateDaysOvernight,
-        countAdult,
-        postBooking,
-        formatCurrency,
-        totalPriceRoundTrip
-    }
+        calculateDuration,
+        calculateDaysOvernight
+    };
 
     return (
         <StoreContext.Provider value={contextValue}>
             {props.children}
         </StoreContext.Provider>
-    )
-}
+    );
+};
 
 export default StoreContextProvider;
