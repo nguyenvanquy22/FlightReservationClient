@@ -50,7 +50,7 @@ const Booking = () => {
                 {flightsToBook.map((flight, idx) => (
                     <div key={flight.id} className={isRoundTrip ? "depart-round_trip" : "depart"}>
                         <h2>
-                            {flight.originAirport.city} ({flight.originAirport.country}) -{" "}
+                            {flight.originAirport.city} ({flight.originAirport.country}){" -> "}
                             {flight.destinationAirport.city} ({flight.destinationAirport.country})
                         </h2>
                         <p>
@@ -112,6 +112,17 @@ const Booking = () => {
                                         />
                                     </div>
                                 </div>
+                                <div className="input-info">
+                                    <div>
+                                        <label>Phone Number</label>
+                                        <br></br>
+                                        <input
+                                            name="phoneNumber"
+                                            value={p.phoneNumber}
+                                            onChange={e => updatePassengerDetail(i, "phoneNumber", e.target.value)}
+                                        />
+                                    </div>
+                                </div>
                                 <div className="input-info-seat-class">
                                     <label>Class</label>
                                     <select
@@ -151,7 +162,7 @@ const Booking = () => {
 
             {/* Submit block */}
             <div className="submit">
-                <h3>Total Price</h3>
+                <h2>Total Price</h2>
                 <p>(for {adults} pax)</p>
                 <h3 className="total-price">
                     {formatPrice(calculateTotalPrice())} VND

@@ -2,16 +2,17 @@
     color: black;
     display: flex;
     margin-top: 70px;
+
 }
 
 .sidebar {
     width: 30%;
     background: #DF0000;
-    // height: 100vh;
     padding-left: 300px;
     color: #F7F7F7;
     font-size: 20px;
     font-weight: 500;
+    height: calc(100vh - 70px);
 
     div {
         margin-top: 20px;
@@ -35,7 +36,7 @@
     display: flex;
     width: 70%;
     background: #F7F7F7;
-    height: 100vh;
+    // height: 100vh;
     padding-right: 300px;
     padding-left: 20px;
 }

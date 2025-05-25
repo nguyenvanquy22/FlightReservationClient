@@ -35,7 +35,6 @@ const StoreContextProvider = (props) => {
     // Order and Payment
     const [urlPayment, setUrlPayment] = useState('');
     const [myOrders, setMyOrders] = useState([]);
-    const [priceRoundTrip, setPriceRoundTrip] = useState(0);
 
     // Authentication Functions
     const login = async (email, password) => {
@@ -135,7 +134,7 @@ const StoreContextProvider = (props) => {
             });
 
             if (response.data && Array.isArray(response.data.data)) {
-                setMyOrders(response.data.data);
+                setMyOrders(response.data.data.reverse());
             }
         } catch (error) {
             console.error("Error fetching orders:", error);
@@ -438,7 +437,6 @@ const StoreContextProvider = (props) => {
             fetchPlaceList();
             fetchFlightsList();
             fetchUser();
-            fetchMyOrders();
         }
     }, [token]);
 
@@ -465,7 +463,6 @@ const StoreContextProvider = (props) => {
         passengerDetails,
         urlPayment,
         myOrders,
-        priceRoundTrip,
 
         // Authentication
         login,

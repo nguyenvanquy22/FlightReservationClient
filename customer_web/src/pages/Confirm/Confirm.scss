@@ -8,18 +8,10 @@
         color: #59595B;
     }
 
-    // .confirm-contain{
-    //     display: flex;
-    //     justify-content: space-between;
-    //     align-items: center;
-    // }
-
     .contain {
         display: flex;
-        justify-content: space-between;
         background-color: #f9f8f8;
         gap: 12px;
-
     }
 
     .flight-info {
@@ -28,6 +20,7 @@
         background: white;
         border-radius: 10px;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
         position: relative;
 
@@ -223,6 +216,7 @@
 
     .right {
         width: 350px;
+        height: 320px;
         background: white;
         border-radius: 10px;
         padding: 20px;

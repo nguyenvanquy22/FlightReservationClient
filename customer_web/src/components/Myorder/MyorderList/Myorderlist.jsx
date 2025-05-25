@@ -1,21 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './Myorderlist.scss';
 import { StoreContext } from '../../../context/StoreContext';
-import { Link } from 'react-router-dom';
-import Footer from '../../Footer/Footer';
-import TicketBooking from '../../TicketBooking/TicketBooking';
-
+import BookingItem from '../../BookingItem/BookingItem';
 
 const Myorderlist = () => {
     const { myOrders, token, fetchMyOrders } = useContext(StoreContext);
-    // useEffect(() => {
-    //     console.log(myOrders);
-    // }, [myOrders]);
-    if (token) {
-        setTimeout(() => {
-            // fetchMyOrders();
-        }, 5000);
-    }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    useEffect(() => {
+        if (token) fetchMyOrders();
+    }, []);
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(myOrders.length / itemsPerPage);
+
+    // Lấy slice tương ứng trang hiện tại
+    const paginatedBookings = myOrders.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const goToPage = (page) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
+    };
 
     return (
         <div className='orderlist'>
@@ -35,12 +45,44 @@ const Myorderlist = () => {
                 </div>
 
                 <div className="main-content-orderlist">
-                    {myOrders.map((flight, index) => {
-                        if (flight.user?.id == localStorage.getItem("userId")) {
-                            return <TicketBooking key={index} myTicket={flight} />;
-                        }
-                    })}
+                    {paginatedBookings.map((booking) => (
+                        <BookingItem key={booking.id} booking={booking} />
+                    ))}
+
+                    {myOrders.length === 0 && <p>Bạn chưa có đơn nào.</p>}
                 </div>
+
+                {totalPages > 1 && (
+                    <div className="pagination">
+                        <button
+                            onClick={() => goToPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            Prev
+                        </button>
+
+                        {/* hiển thị số trang: */}
+                        {[...Array(totalPages)].map((_, idx) => {
+                            const page = idx + 1;
+                            return (
+                                <button
+                                    key={page}
+                                    className={page === currentPage ? "active" : ""}
+                                    onClick={() => goToPage(page)}
+                                >
+                                    {page}
+                                </button>
+                            );
+                        })}
+
+                        <button
+                            onClick={() => goToPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
             </main>
         </div>
     );
