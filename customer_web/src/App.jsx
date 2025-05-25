@@ -7,8 +7,8 @@ import Flight from './pages/Flight/Flight'
 import Booking from './pages/Booking/Booking'
 import LoginPopup from './components/LoginPopup/LoginPopup'
 import Confirm from './pages/Confirm/Confirm'
-import Thank from './pages/Thank/Thank'
-import Success from './pages/Success/Success'
+import BookingSuccess from './pages/BookingSuccess/BookingSuccess'
+import BookingFail from './pages/BookingFail/BookingFail'
 
 function App() {
   const [showLogin, setShowLogin] = useState(false)
@@ -23,8 +23,8 @@ function App() {
         <Route path="/contact" element={<Home />} />
         <Route path="/confirm" element={<Confirm />} />
         <Route path="/booking" element={<Booking />} />
-        <Route path="/booking/success" element={<Thank />} />
-        <Route path="/success" element={<Success />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/booking-fail" element={<BookingFail />} />
       </Routes>
     </>
   )

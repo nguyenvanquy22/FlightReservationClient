@@ -1,0 +1,63 @@
+.booking-fail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+    min-height: 100vh;
+    background: #f5f5f5;
+
+    .fail-container {
+        background: #fff;
+        border-radius: 8px;
+        padding: 40px;
+        max-width: 500px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        h2 {
+            color: #DF0000;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+
+            button {
+                padding: 10px 18px;
+                font-size: 14px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.2s;
+
+                &:first-of-type {
+                    background: #DF0000;
+                    color: #fff;
+
+                    &:hover {
+                        background: #b00404;
+                    }
+                }
+
+                &:last-of-type {
+                    background: #ccc;
+                    color: #333;
+
+                    &:hover {
+                        background: #999;
+                    }
+                }
+            }
+        }
+    }
+}

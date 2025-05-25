@@ -1,0 +1,100 @@
+.booking-success {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    color: #333;
+
+    &.error {
+        color: red;
+        text-align: center;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+
+        h2 {
+            color: #DF0000;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .status {
+            text-transform: capitalize;
+            font-weight: bold;
+        }
+    }
+
+    .payment-info,
+    .tickets {
+        margin-bottom: 24px;
+
+        h3 {
+            border-bottom: 2px solid #DF0000;
+            display: inline-block;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            color: #DF0000;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                margin: 6px 0;
+                font-size: 14px;
+            }
+        }
+
+        .ticket-item {
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            margin-bottom: 12px;
+
+            h4 {
+                margin-bottom: 8px;
+                font-size: 16px;
+                color: #333;
+            }
+
+            p {
+                margin: 4px 0;
+                font-size: 14px;
+            }
+
+            strong {
+                color: #555;
+            }
+        }
+    }
+
+    .actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #DF0000;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+
+            &:hover {
+                background: #b00404;
+            }
+        }
+    }
+}
