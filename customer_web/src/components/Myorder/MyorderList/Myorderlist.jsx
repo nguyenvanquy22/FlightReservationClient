@@ -7,13 +7,13 @@ import TicketBooking from '../../TicketBooking/TicketBooking';
 
 
 const Myorderlist = () => {
-    const { myorder, token, fetchMyorder } = useContext(StoreContext);
+    const { myOrders, token, fetchMyOrders } = useContext(StoreContext);
     // useEffect(() => {
-    //     console.log(myorder);
-    // }, [myorder]);
+    //     console.log(myOrders);
+    // }, [myOrders]);
     if (token) {
         setTimeout(() => {
-            // fetchMyorder();
+            // fetchMyOrders();
         }, 5000);
     }
 
@@ -35,7 +35,7 @@ const Myorderlist = () => {
                 </div>
 
                 <div className="main-content-orderlist">
-                    {myorder.map((flight, index) => {
+                    {myOrders.map((flight, index) => {
                         if (flight.user?.id == localStorage.getItem("userId")) {
                             return <TicketBooking key={index} myTicket={flight} />;
                         }

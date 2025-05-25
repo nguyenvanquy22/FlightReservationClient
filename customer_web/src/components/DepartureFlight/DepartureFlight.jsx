@@ -7,28 +7,19 @@ import { StoreContext } from "../../context/StoreContext";
 const DepartureFlight = ({ flight }) => {
     const [isSelected, setIsSelected] = useState(false);
     const { selectFlight, selectSeatOption, formatTime, calculateDuration, place,
-        formatDate, calculateDaysOvernight, formatPrice, isRoundTrip,
-        isRoundTrip1, setIsRoundTrip1, place1, place2, searchReturnFlights
+        formatDate, calculateDaysOvernight, formatPrice, isRoundTrip, setIsRoundTrip,
+        place1, place2, searchReturnFlights, selectedDepartureFlight,
     } = useContext(StoreContext);
 
-    const chosenFlight = (flight, seatOption) => {
-        selectFlight(flight);
-        selectSeatOption(seatOption);
+    const chosenFlight = (flight, seatOption, isReturn) => {
+        selectFlight(flight, isReturn);
+        selectSeatOption(seatOption, isReturn);
+        searchReturnFlights(place2, place1, sessionStorage.getItem('returnDate'));
     };
 
     const handleSelect = () => {
         setIsSelected(!isSelected);
     };
-
-    const handleAround = () => {
-        setIsRoundTrip1(false);
-        var place11 = place1;
-        var place22 = place2;
-        setTimeout(() => {
-            searchReturnFlights(place22, place11, sessionStorage.getItem('returnDate'));
-            chosenFlight(flight);
-        }, 500);
-    }
 
     return (
         <div className="departureFlight">
@@ -100,35 +91,33 @@ const DepartureFlight = ({ flight }) => {
                             <img className="bag" src={assets.bag}></img>
                             <p>Cabin Baggage 7kg</p>
                         </div>
-                        {!isRoundTrip1 ? (
-                            !isRoundTrip ? (
-
-                                <Link to="/confirm">
-                                    <button
-                                        onClick={() => chosenFlight(flight, option)}
-                                        className="book"
-                                    >
-                                        Book Now
-                                    </button>
-                                </Link>
-
+                        {isRoundTrip ? (
+                            !selectedDepartureFlight ? (
+                                <button onClick={() => {
+                                    sessionStorage.setItem('departureDate', flight.departureTime)
+                                    console.log("departureDate", flight.departureTime)
+                                    console.log("departureDate", sessionStorage.setItem('departureDateDontChose', flight.departureTime))
+                                    chosenFlight(flight, option, false)
+                                }}
+                                    className="book">
+                                    Book The Departure
+                                </button>
                             ) : (
                                 <Link to="/confirm">
-                                    <button onClick={() => chosenFlight(flight, option)} className="book">
+                                    <button onClick={() => chosenFlight(flight, option, true)} className="book">
                                         Book The Return
                                     </button>
                                 </Link>
                             )
                         ) : (
-                            <button onClick={() => {
-                                sessionStorage.setItem('departureDate', flight.departureTime)
-                                console.log("departureDate", flight.departureTime)
-                                console.log("departureDate", sessionStorage.setItem('departureDateDontChose', flight.departureTime))
-                                handleAround();
-                            }
-                            } className="book">
-                                Book The Departure
-                            </button>
+                            <Link to="/confirm">
+                                <button
+                                    onClick={() => chosenFlight(flight, option, false)}
+                                    className="book"
+                                >
+                                    Book Now
+                                </button>
+                            </Link>
                         )}
 
                     </div>

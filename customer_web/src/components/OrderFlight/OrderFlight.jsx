@@ -6,9 +6,6 @@ import StoreContextProvider, { StoreContext } from "../../context/StoreContext";
 // import StoreContextProvider from "../../context/StoreContext";
 
 const OrderFlight = () => {
-
-    // const [isRoundTrip, setIsRoundTrip] = useState(false);
-
     const [showOrigin, setShowOrigin] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -17,7 +14,7 @@ const OrderFlight = () => {
     const [departureDate, setDepartureDate] = useState('');
     const [returnDate, setReturnDate] = useState('');
 
-    const { place, searchFlights, place1, place2, isRoundTrip, setIsRoundTrip, setIsRoundTrip1, searchTermReturn } = useContext(StoreContext);
+    const { place, searchFlights, place1, place2, isRoundTrip, setIsRoundTrip, searchTermReturn } = useContext(StoreContext);
 
     const handleFlightChange = (e) => {
         setFlight(e);
@@ -64,7 +61,6 @@ const OrderFlight = () => {
                 <button className={`itinerary ${!isRoundTrip ? 'itinerary__active' : ''}`}
                     onClick={() => {
 
-                        setIsRoundTrip1(false)
                         setIsRoundTrip(false)
                     }}        >
                     One way
@@ -72,7 +68,6 @@ const OrderFlight = () => {
                 <button className={`itinerary ${isRoundTrip ? 'itinerary__active' : ''}`}
                     onClick={() => {
 
-                        setIsRoundTrip1(true)
                         setIsRoundTrip(true)
                     }}         >
                     Round trip

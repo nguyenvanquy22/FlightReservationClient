@@ -252,9 +252,9 @@ const StoreContextProvider = (props) => {
                 newDetails.push({
                     firstName: '',
                     lastName: '',
-                    email: '',
+                    dateOfBirth: '',
                     phoneNumber: '',
-                    passport: '',
+                    passportNumber: '',
                     nationality: ''
                 });
             }
@@ -295,6 +295,27 @@ const StoreContextProvider = (props) => {
         return total;
     };
 
+    const generatePaymentUrl = async (bookingId, amount) => {
+        try {
+            const authToken = localStorage.getItem("customerToken");
+            const res = await axios.get(`${url}/api/payments/vn-pay`, {
+                params: {
+                    bookingId,
+                    amount,
+                    bankCode: 'NCB',
+                },
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                }
+            });
+            // ApiResponse<String> trả về trong res.data.data
+            return res.data.data;
+        } catch (err) {
+            console.error("Error generating payment URL:", err);
+            return null;
+        }
+    };
+
     // Booking Submission
     const submitBooking = async () => {
         try {
@@ -313,32 +334,29 @@ const StoreContextProvider = (props) => {
             // Construct booking data
             const bookingData = {
                 userId: user.id,
-                flights: [
+                flightBookingRequests: [
                     {
                         flightId: selectedDepartureFlight.id,
                         seatOptionId: selectedSeatOption.id
                     }
                 ],
-                passengers: passengerDetails.map(p => ({
-                    firstName: p.firstName,
-                    lastName: p.lastName,
-                    email: p.email || user.email,
-                    phoneNumber: p.phoneNumber || user.phoneNumber,
-                    passport: p.passport,
-                    nationality: p.nationality
+                passengersRequest: passengerDetails.map(passenger => ({
+                    ...passenger,
+                    email: passenger.email || user.email,
+                    phoneNumber: passenger.phoneNumber || user.phoneNumber,
                 })),
                 totalPrice: calculateTotalPrice()
             };
 
             // Add return flight if applicable
             if (isRoundTrip && selectedReturnFlight && returnSeatOption) {
-                bookingData.flights.push({
+                bookingData.flightBookingRequests.push({
                     flightId: selectedReturnFlight.id,
                     seatOptionId: returnSeatOption.id
                 });
             }
 
-            const response = await axios.post(`${url}/api/bookings`, bookingData, {
+            const res = await axios.post(`${url}/api/bookings`, bookingData, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                     "Content-Type": "application/json",
@@ -346,20 +364,29 @@ const StoreContextProvider = (props) => {
                 withCredentials: true,
             });
 
-            console.log("Booking successful:", response.data.data);
-            const { id, message, paymentUrl } = response.data.data;
+            const booking = res.data.data;
+            console.log("Booking created:", booking);
+
+            // 2.2. Sang bước tạo URL thanh toán
+            const paymentUrl = await generatePaymentUrl(booking.id, booking.totalPrice);
+            if (!paymentUrl) {
+                alert("Không thể tạo URL thanh toán. Vui lòng thử lại.");
+                return booking;
+            }
+
             setUrlPayment(paymentUrl);
 
             // Open payment window
-            if (paymentUrl) {
-                const width = 600;
-                const height = 400;
-                const left = window.screenX + (window.innerWidth / 2) - (width / 2);
-                const top = window.screenY + (window.innerHeight / 2) - (height / 1);
-                window.open(paymentUrl, "PaymentWindow", `width=${width},height=${height},top=${top},left=${left}`);
-            }
+            // if (paymentUrl) {
+            //     const width = 600, height = 400;
+            //     const left = window.screenX + (window.innerWidth - width) / 2;
+            //     const top = window.screenY + (window.innerHeight - height) / 2;
+            //     window.open(paymentUrl, "PaymentWindow", `width=${width},height=${height},top=${top},left=${left}`);
+            // }
 
-            return response.data.data;
+            window.location.href = paymentUrl;
+
+            return booking;
         } catch (error) {
             console.error("Error making booking:", error);
             return null;

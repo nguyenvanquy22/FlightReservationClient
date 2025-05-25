@@ -32,137 +32,84 @@ const Confirm = () => {
 
     const total = calculateTotalPrice();
 
+    // Build array of flights and seatOptions
+    const flights = isRoundTrip
+        ? [selectedDepartureFlight, selectedReturnFlight]
+        : [selectedDepartureFlight];
+    const seatOptions = isRoundTrip
+        ? [selectedSeatOption, returnSeatOption]
+        : [selectedSeatOption];
+
     return (
         <div className="confirm-page">
             <h3>Trip Summary</h3>
             <div className="contain">
-                {/* --- Left panel: flight-info --- */}
-                <div className="flight-info">
-                    {/* Departure */}
-                    <div className="main-content">
-                        <p>{selectedDepartureFlight.originAirport.city}</p>
-                        <div>
-                            <p>{'--'}</p>
-                            <p>{'>'}</p>
+                {flights.map((flight, idx) => (
+                    <div key={idx} className="flight-info">
+                        {/* Route */}
+                        <div className="main-content">
+                            <p>{flight.originAirport.city}</p>
+                            <div>
+                                <p>{'--'}</p>
+                                <p>{'>'}</p>
+                            </div>
+                            <p>{flight.destinationAirport.city}</p>
+                            <span className="basePrice">
+                                {formatPrice(seatOptions[idx].seatPrice)} VND
+                            </span>
                         </div>
-                        <p>{selectedDepartureFlight.destinationAirport.city}</p>
-                        <span className="basePrice">
-                            {formatPrice(selectedSeatOption.seatPrice)} VND
-                        </span>
+                        {/* Transit details */}
+                        <div className="transit-points">
+                            <div className="aircraft">
+                                <img
+                                    src={assets.aircraftIcon1}
+                                    className="svg"
+                                    alt="plane"
+                                />
+                                <p>{flight.airplane.airline.name}</p>
+                            </div>
+                            <div className="left-transit-points">
+                                <div className="time">
+                                    <p>{formatTime(flight.departureTime)}</p>
+                                    <p>{formatDate(flight.departureTime)}</p>
+                                </div>
+                                <div className="arrow">
+                                    o<hr />v
+                                </div>
+                                <div className="time">
+                                    <p>{formatTime(flight.arrivalTime)}</p>
+                                    <p>{formatDate(flight.arrivalTime)}</p>
+                                </div>
+                            </div>
+                            <div className="right-transit-points">
+                                <div className="place">
+                                    <div>
+                                        <p>{flight.originAirport.name}</p>
+                                        <p>
+                                            {flight.originAirport.city} - {flight.originAirport.country}
+                                        </p>
+                                    </div>
+                                    <div className="time-place">
+                                        <img src={assets.clock} alt="clock" />
+                                        <p>
+                                            {calculateDuration(
+                                                flight.departureTime,
+                                                flight.arrivalTime
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p>{flight.destinationAirport.name}</p>
+                                        <p>
+                                            {flight.destinationAirport.city} - {flight.destinationAirport.country}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="transit-points">
-                        <div className="aircraft">
-                            <img src={assets.aircraftIcon1} className="svg" alt="" />
-                            <p>{selectedDepartureFlight.airplane.airline.name}</p>
-                        </div>
-                        <div className="left-transit-points">
-                            <div className="time">
-                                <p>{formatTime(selectedDepartureFlight.departureTime)}</p>
-                                <p>{formatDate(selectedDepartureFlight.departureTime)}</p>
-                            </div>
-                            <div className="arrow">
-                                o<hr />v
-                            </div>
-                            <div className="time">
-                                <p>{formatTime(selectedDepartureFlight.arrivalTime)}</p>
-                                <p>{formatDate(selectedDepartureFlight.arrivalTime)}</p>
-                            </div>
-                        </div>
-                        <div className="right-transit-points">
-                            <div className="place">
-                                <div>
-                                    <p>{selectedDepartureFlight.originAirport.name}</p>
-                                    <p>
-                                        {selectedDepartureFlight.originAirport.city} -{" "}
-                                        {selectedDepartureFlight.originAirport.country}
-                                    </p>
-                                </div>
-                                <div className="time-place">
-                                    <img src={assets.clock} alt="" />
-                                    <p>
-                                        {calculateDuration(
-                                            selectedDepartureFlight.departureTime,
-                                            selectedDepartureFlight.arrivalTime
-                                        )}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p>{selectedDepartureFlight.destinationAirport.name}</p>
-                                    <p>
-                                        {selectedDepartureFlight.destinationAirport.city} -{" "}
-                                        {selectedDepartureFlight.destinationAirport.country}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Return (if round-trip) */}
-                    {isRoundTrip && selectedReturnFlight && returnSeatOption && (
-                        <>
-                            <hr />
-                            <div className="main-content">
-                                <p>{selectedReturnFlight.originAirport.city}</p>
-                                <div>
-                                    <p>{'--'}</p>
-                                    <p>{'>'}</p>
-                                </div>
-                                <p>{selectedReturnFlight.destinationAirport.city}</p>
-                                <span className="basePrice">
-                                    {formatPrice(returnSeatOption.seatPrice)} VND
-                                </span>
-                            </div>
-                            <div className="transit-points">
-                                <div className="aircraft">
-                                    <img src={assets.aircraftIcon1} className="svg" alt="" />
-                                    <p>{selectedReturnFlight.airplane.airline.name}</p>
-                                </div>
-                                <div className="left-transit-points">
-                                    <div className="time">
-                                        <p>{formatTime(selectedReturnFlight.departureTime)}</p>
-                                        <p>{formatDate(selectedReturnFlight.departureTime)}</p>
-                                    </div>
-                                    <div className="arrow">
-                                        o<hr />v
-                                    </div>
-                                    <div className="time">
-                                        <p>{formatTime(selectedReturnFlight.arrivalTime)}</p>
-                                        <p>{formatDate(selectedReturnFlight.arrivalTime)}</p>
-                                    </div>
-                                </div>
-                                <div className="right-transit-points">
-                                    <div className="place">
-                                        <div>
-                                            <p>{selectedReturnFlight.originAirport.name}</p>
-                                            <p>
-                                                {selectedReturnFlight.originAirport.city} -{" "}
-                                                {selectedReturnFlight.originAirport.country}
-                                            </p>
-                                        </div>
-                                        <div className="time-place">
-                                            <img src={assets.clock} alt="" />
-                                            <p>
-                                                {calculateDuration(
-                                                    selectedReturnFlight.departureTime,
-                                                    selectedReturnFlight.arrivalTime
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p>{selectedReturnFlight.destinationAirport.name}</p>
-                                            <p>
-                                                {selectedReturnFlight.destinationAirport.city} -{" "}
-                                                {selectedReturnFlight.destinationAirport.country}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                {/* --- Right panel: passenger count & total --- */}
+                ))}
+                {/* Right panel */}
                 <div className="right">
                     <h2>Price Detail</h2>
                     <p>(Default is {selectedSeatOption.seatClassName})</p>
@@ -187,9 +134,7 @@ const Confirm = () => {
                         <p className="price">{formatPrice(total)} VND</p>
                     </div>
 
-                    <button className="booknow" onClick={() => navigate("/booking")}>
-                        Continue to Booking
-                    </button>
+                    <button className="booknow" onClick={() => navigate("/booking")}>Continue to Booking</button>
                 </div>
             </div>
         </div>
