@@ -29,7 +29,7 @@ const BookingList = () => {
         try {
             const response = await fetchWithToken(`${SERVER_API}/bookings`);
             const data = await response.json();
-            setBookings(data.data);
+            setBookings(data.data.reverse());
             setTotalPages(Math.ceil(data.length / bookingsPerPage));
         } catch (error) {
             console.error('Error fetching booking list:', error);

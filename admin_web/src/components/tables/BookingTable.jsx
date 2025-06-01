@@ -6,6 +6,8 @@ const BookingTable = ({ bookings }) => {
     const formatDate = dt =>
         new Date(dt).toLocaleString();
 
+    console.log(bookings);
+
     return (
         <table className="booking-table">
             <thead>
@@ -21,11 +23,6 @@ const BookingTable = ({ bookings }) => {
             </thead>
             <tbody>
                 {bookings.map(booking => {
-                    // Tính tổng giá: tổng price của tickets + bất cứ phí luggage nào nếu có
-                    const totalPrice = booking.tickets
-                        .reduce((sum, t) => sum + parseFloat(t.price || 0), 0)
-                        .toFixed(2);
-
                     return (
                         <tr key={booking.id}>
                             <td>{booking.id}</td>
@@ -33,11 +30,12 @@ const BookingTable = ({ bookings }) => {
                             <td>{booking.user.email}</td>
                             <td>{booking.status}</td>
                             <td>{booking.tickets.length}</td>
-                            <td>{totalPrice}</td>
+                            <td>{booking?.totalPrice}</td>
                             <td>
                                 <table className="nested-table">
                                     <thead>
                                         <tr>
+                                            <th>Flight</th>
                                             <th>Seat</th>
                                             <th>Class</th>
                                             <th>Passenger</th>
@@ -48,9 +46,10 @@ const BookingTable = ({ bookings }) => {
                                     <tbody>
                                         {booking.tickets.map(ticket => (
                                             <tr key={ticket.id}>
-                                                <td>{ticket.seatNumber}</td>
+                                                <td>{ticket.flightNumber}</td>
+                                                <td>{ticket?.seatNumber || '—'}</td>
                                                 <td>
-                                                    {ticket.seatClassAirplaneFlight?.seatClass?.name || '—'}
+                                                    {ticket.seatClassName || '—'}
                                                 </td>
                                                 <td>
                                                     {ticket.passenger.firstName}{' '}

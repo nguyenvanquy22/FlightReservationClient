@@ -18,8 +18,8 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
                     <tr key={user.id}>
                         <td>{user.email}</td>
                         <td>{user.role}</td>
-                        <td>{user.createdAt}</td>
-                        <td>{user.updatedAt}</td>
+                        <td>{new Date(user.createdAt).toLocaleString()}</td>
+                        <td>{new Date(user.updatedAt).toLocaleString()}</td>
                         <td>
                             <button onClick={() => onEdit(user)} className="edit-button">Edit</button>
                             <button onClick={() => onDelete(user.id)} className="delete-button">Delete</button>

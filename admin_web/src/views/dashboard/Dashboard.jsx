@@ -142,10 +142,10 @@ function Dashboard() {
 
 
     const topFlightsWithCount = flights
-      .filter(flight => topFlightIds.includes(flight.flightId))
+      .filter(flight => topFlightIds.includes(flight.id))
       .map(flight => ({
         ...flight,
-        bookingCount: flightCountMap[flight.flightId]
+        bookingCount: flightCountMap[flight.id]
       }));
     // console.log(topFlightsWithCount)
     return topFlightsWithCount;

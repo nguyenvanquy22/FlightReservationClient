@@ -29,9 +29,9 @@ const AdminLoginPage = () => {
 
             const data = await response.json();
 
-            if (data.data.user.role === "ADMIN") {
-                localStorage.setItem("adminToken", data.data.user.token);
-                localStorage.setItem("userId", data.data.user.id);
+            if (data.user.role === "ADMIN") {
+                localStorage.setItem("adminToken", data.token);
+                localStorage.setItem("userId", data.user.id);
 
                 navigate("/dashboard");
             } else {

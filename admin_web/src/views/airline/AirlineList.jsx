@@ -182,7 +182,7 @@ const AirlineList = () => {
 
     return (
         <div className='container'>
-            <Header title={'Airline'} />
+            <Header title={'Airlines'} />
             <div className="airline-list-container content">
                 <div className="search-bar">
                     <input
