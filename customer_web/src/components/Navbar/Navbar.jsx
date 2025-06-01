@@ -62,7 +62,8 @@ const Navbar = ({ setShowLogin }) => {
                 {/* <div> */}
                 <ul className='navbar-menu'>
                     <Link to="/">
-                        <img src={assets.airpaz2} className={`airpaz ${scrolled ? 'scrolled' : ''}`} alt="logo" />
+                        {/* <img src={assets.airpaz2} className={`airpaz ${scrolled ? 'scrolled' : ''}`} alt="logo" /> */}
+                        <div onClick={() => setMenu("home")} className="logo">UTC-FR</div>
                     </Link>
                     <Link to="/">
                         <li onClick={() => setMenu("home")} className={menu === "home" ? "active" : ""}>Home</li>

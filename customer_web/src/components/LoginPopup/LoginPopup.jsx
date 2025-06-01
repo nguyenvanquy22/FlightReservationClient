@@ -45,11 +45,11 @@ const LoginPopup = ({ setShowLogin }) => {
 
                 const data = await response.json();
 
-                // if (data.userRole === "CUSTOMER") 
-                //     {
-                localStorage.setItem("customerToken", data.data.token);
-                localStorage.setItem("userId", data.data.user.id);
-                setToken(data.data.token);
+                console.log(data)
+
+                localStorage.setItem("customerToken", data.token);
+                localStorage.setItem("userId", data.user.id);
+                setToken(data.token);
                 setIsLoggedIn(true);
                 setShowLogin(false);
                 setUsername("");
@@ -57,9 +57,6 @@ const LoginPopup = ({ setShowLogin }) => {
                 setError("");
                 navigate("/");
 
-                // } else {
-                //     setError("You are not a customer. Access denied.");
-                // }
             } catch (error) {
                 setError("Server error. Please try again later.");
             }

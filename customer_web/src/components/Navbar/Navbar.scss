@@ -32,7 +32,7 @@
     list-style-type: none;
     display: flex;
     justify-content: space-between;
-    margin-top: 24px;
+    align-items: center;
     width: 400px;
     height: 100%;
 
@@ -41,6 +41,16 @@
             display: block;
             border-bottom: 2px solid rgb(255, 252, 252);
         }
+    }
+
+    .active {
+        font-weight: bold;
+    }
+
+    .logo {
+        font-size: 28px;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-weight: bold;
     }
 }
 

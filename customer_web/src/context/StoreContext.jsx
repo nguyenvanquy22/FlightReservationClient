@@ -43,11 +43,11 @@ const StoreContextProvider = (props) => {
                 email,
                 password
             });
-            const { token, userId } = response.data;
+            const { token, user } = response.data;
             localStorage.setItem('customerToken', token);
-            localStorage.setItem('userId', userId);
+            localStorage.setItem('userId', user.id);
             setToken(token);
-            await fetchUser(userId, token);
+            await fetchUser(user.id, token);
             return true;
         } catch (error) {
             console.error('Error logging in:', error);
