@@ -1,17 +1,20 @@
 .profile-container {
     width: 100%;
-    max-width: 700px;
+    max-width: 900px;
     margin: 50px auto;
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);  /* Tăng độ mờ bóng */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    /* Tăng độ mờ bóng */
     padding: 20px;
 
     h1 {
         text-align: center;
         color: #333;
-        font-size: 28px;  /* Tăng kích thước chữ */
-        margin-bottom: 20px;  /* Thêm khoảng cách dưới h1 */
+        font-size: 28px;
+        /* Tăng kích thước chữ */
+        margin-bottom: 20px;
+        /* Thêm khoảng cách dưới h1 */
     }
 }
 
@@ -23,7 +26,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;  /* Thêm khoảng cách dưới phần header */
+    padding-bottom: 20px;
+    /* Thêm khoảng cách dưới phần header */
     border-bottom: 2px solid #f0f0f0;
 }
 
@@ -35,15 +39,18 @@
 .profile-picture {
     font-size: 30px;
     font-weight: bold;
-    color: white;    
-    background: linear-gradient(to bottom right, #DF0000, #fc6060);  /* Thay đổi màu sắc gradient */
-    width: 70px;  /* Điều chỉnh kích thước ảnh đại diện */
+    color: white;
+    background: linear-gradient(to bottom right, #DF0000, #fc6060);
+    /* Thay đổi màu sắc gradient */
+    width: 70px;
+    /* Điều chỉnh kích thước ảnh đại diện */
     height: 70px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  /* Thêm bóng đổ cho ảnh đại diện */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Thêm bóng đổ cho ảnh đại diện */
 }
 
 .profile-icon {
@@ -57,20 +64,25 @@
 
 .profile-details h2 {
     margin: 0;
-    font-size: 26px;  /* Tăng kích thước chữ */
+    font-size: 26px;
+    /* Tăng kích thước chữ */
     color: #333;
-    font-weight: 600;  /* Thêm trọng lượng cho font */
+    font-weight: 600;
+    /* Thêm trọng lượng cho font */
 }
 
 .edit-btn {
     background-color: white;
-    border: 1px solid #DF0000;  /* Thay đổi màu biên */
-    color: #DF0000;  /* Thay đổi màu chữ */
+    border: 1px solid #DF0000;
+    /* Thay đổi màu biên */
+    color: #DF0000;
+    /* Thay đổi màu chữ */
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s ease, color 0.3s ease;  /* Thêm hiệu ứng khi hover */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Thêm hiệu ứng khi hover */
 }
 
 .edit-btn:hover {
@@ -88,9 +100,11 @@
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid #f0f0f0;
+
     span {
         padding: 8px;
     }
+
     input {
         width: 100%;
         max-width: 500px;
@@ -102,7 +116,8 @@
 }
 
 .profile-row:last-child {
-    border-bottom: none;  /* Loại bỏ đường viền dưới cho dòng cuối */
+    border-bottom: none;
+    /* Loại bỏ đường viền dưới cho dòng cuối */
 }
 
 .profile-row label {
@@ -113,7 +128,8 @@
 .profile-row div,
 .profile-row span {
     color: #333;
-    font-size: 16px;  /* Điều chỉnh kích thước font */
+    font-size: 16px;
+    /* Điều chỉnh kích thước font */
 }
 
 .verify-link {
@@ -131,22 +147,25 @@
 .add-link:hover,
 .verify-link:hover {
     text-decoration: underline;
-    font-weight: bold;  /* Thêm trọng lượng chữ khi hover */
+    font-weight: bold;
+    /* Thêm trọng lượng chữ khi hover */
 }
 
 .save-btn {
     margin-top: 10px;
     width: 100%;
     text-align: center;
+
     button {
         width: 50%;
         height: 40px;
-        background-color:  #DF0000;
+        background-color: #DF0000;
         color: white;
         padding: 8px 16px;
         border-radius: 5px;
         cursor: pointer;
         font-weight: bold;
-        transition: background-color 0.3s ease, color 0.3s ease;  /* Thêm hiệu ứng khi hover */
+        transition: background-color 0.3s ease, color 0.3s ease;
+        /* Thêm hiệu ứng khi hover */
     }
 }

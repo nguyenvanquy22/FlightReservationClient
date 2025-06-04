@@ -143,6 +143,8 @@ const StoreContextProvider = (props) => {
 
     // Flight Search Functions
     const searchFlights = (origin, destination, departureDate) => {
+        setSelectedDepartureFlight(null);
+        setSelectedReturnFlight(null);
         setPlace1(origin);
         setPlace2(destination);
         setDepartureDate(departureDate);
@@ -154,7 +156,7 @@ const StoreContextProvider = (props) => {
             filteredFlights = flights.filter(flight =>
                 flight.originAirport.city === origin &&
                 flight.destinationAirport.city === destination
-                // && new Date(flight.departureTime) > today
+                && new Date(flight.departureTime) > today
             );
         } else {
             // Format the date to match the format used in flight.departureTime
@@ -170,23 +172,22 @@ const StoreContextProvider = (props) => {
         setSearchedFlights(filteredFlights);
     };
 
-    const searchReturnFlights = (origin, destination, returnDate) => {
+    const searchReturnFlights = (origin, destination, minDateTime, returnDate) => {
         setReturnDate(returnDate);
 
         let filteredFlights;
-        const departureDateTime = new Date(selectedDepartureFlight?.arrivalTime);
 
         if (!returnDate) {
             filteredFlights = flights.filter(flight =>
-                flight.originAirport.city === destination &&
-                flight.destinationAirport.city === origin &&
-                new Date(flight.departureTime) > departureDateTime
+                flight.originAirport.city === origin &&
+                flight.destinationAirport.city === destination &&
+                new Date(flight.departureTime) > new Date(minDateTime)
             );
         } else {
             const formattedDate = returnDate.split('T')[0];
             filteredFlights = flights.filter(flight =>
-                flight.originAirport.city === destination &&
-                flight.destinationAirport.city === origin &&
+                flight.originAirport.city === origin &&
+                flight.destinationAirport.city === destination &&
                 flight.departureTime.includes(formattedDate)
             );
         }

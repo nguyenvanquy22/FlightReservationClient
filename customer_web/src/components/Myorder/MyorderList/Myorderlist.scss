@@ -1,10 +1,17 @@
 .orderlist {
-    width: 100%;
+    width: 85%;
+    margin-top: 20px;
+    margin: auto;
+
+    h2 {
+        font-size: 32px;
+    }
 }
 
 .orderlist-item {
     display: flex;
     justify-content: space-around;
+    align-items: center;
     padding: 10px;
     font-size: 16px;
     font-weight: 500;
@@ -26,7 +33,6 @@
 
 .order-list {
     width: 100%;
-    padding: 0 20px;
     // background-color: #fff;
     margin-left: 0px;
 

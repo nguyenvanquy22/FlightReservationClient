@@ -10,7 +10,7 @@ import { assets } from "../../assets/assets";
 
 const Flight = () => {
 
-    const { flights, newFlights, filterStop } = useContext(StoreContext);
+    const { newFlights, filterByStops } = useContext(StoreContext);
 
     const [selectedTimes, setSelectedTimes] = useState([]);
     const timeRanges = [
@@ -19,6 +19,7 @@ const Flight = () => {
         { label: "Afternoon Flight", range: "12:00-18:00" },
         { label: "Night Flight", range: "18:00-24:00" }
     ]
+    const [selectedStops, setSelectedStops] = useState(2);
 
     const handleTimeChange = (timeRange) => {
         setSelectedTimes(prevTimes =>
@@ -26,7 +27,11 @@ const Flight = () => {
                 ? prevTimes.filter(t => t !== timeRange)
                 : [...prevTimes, timeRange]
         );
-        // console.log("time", timeRange);
+    };
+
+    const handleStopsChange = (stops) => {
+        setSelectedStops(stops);
+        filterByStops(stops);
     };
 
     const filterFlights = () => {
@@ -34,7 +39,6 @@ const Flight = () => {
             return newFlights; // Nếu không chọn gì thì hiển thị tất cả chuyến bay
         }
 
-        console.log("selectedTimes", selectedTimes);
         return newFlights.filter(flight => {
             const flightTime = new Date(flight.departureTime).toTimeString().slice(0, 5); // Chuyển thời gian khởi hành thành dạng "HH:MM"
             return selectedTimes.some(timeRange => {
@@ -55,15 +59,6 @@ const Flight = () => {
 
     const filteredFlights = filterFlights(); // Chuyến bay đã lọc
 
-
-
-    // useEffect(() => {
-    //     setSelectedTimes(newFlights);
-    //     console.log("selectedTimes", selectedTimes);
-    // }, [selectedTimes]);
-
-
-
     return (
         <div>
             <div className="Header">
@@ -73,7 +68,15 @@ const Flight = () => {
                     <div className="filter">
                         <div className="filter-reset">
                             <h3>Filter</h3>
-                            <button>Reset All</button>
+                            <button
+                                className="reset-button"
+                                onClick={() => {
+                                    setSelectedTimes([]);
+                                    handleStopsChange(2);
+                                }}
+                            >
+                                Reset All
+                            </button>
                         </div>
                         <div className="filter-price">
                             <h3>Price</h3>
@@ -89,7 +92,8 @@ const Flight = () => {
                                     type="radio"
                                     name="stops"
                                     value="0"
-                                    onChange={() => filterStop(0)}
+                                    checked={selectedStops === 0}
+                                    onChange={() => handleStopsChange(0)}
                                 />
                                 Direct
                             </div>
@@ -99,7 +103,8 @@ const Flight = () => {
                                     type="radio"
                                     name="stops"
                                     value="1"
-                                    onChange={() => filterStop(1)}
+                                    checked={selectedStops === 1}
+                                    onChange={() => handleStopsChange(1)}
                                 />
                                 1 Stop
                             </div>
@@ -109,7 +114,8 @@ const Flight = () => {
                                     type="radio"
                                     name="stops"
                                     value="2"
-                                    onChange={() => filterStop(2)}
+                                    checked={selectedStops === 2}
+                                    onChange={() => handleStopsChange(2)}
                                 />
                                 All
                             </div>

@@ -11,15 +11,18 @@ const DepartureFlight = ({ flight }) => {
         place1, place2, searchReturnFlights, selectedDepartureFlight,
     } = useContext(StoreContext);
 
-    const chosenFlight = (flight, seatOption, isReturn) => {
-        selectFlight(flight, isReturn);
-        selectSeatOption(seatOption, isReturn);
-        searchReturnFlights(place2, place1, sessionStorage.getItem('returnDate'));
+    const chosenFlight = async (flight, seatOption, isReturn) => {
+        await selectFlight(flight, isReturn);
+        await selectSeatOption(seatOption, isReturn);
     };
 
     const handleSelect = () => {
         setIsSelected(!isSelected);
     };
+
+    const minPrice = flight.seatOptions.reduce((min, option) => {
+        return option.seatPrice < min ? option.seatPrice : min;
+    }, flight.seatOptions[0]?.seatPrice || 0);
 
     return (
         <div className="departureFlight">
@@ -54,7 +57,7 @@ const DepartureFlight = ({ flight }) => {
                     </div>
                 </div>
                 <div className="item-info">
-                    <p>{formatPrice(flight?.basePrice || 0)} VND</p>
+                    <p>{formatPrice(minPrice || 0)} VND</p>
                     <button className="select" onClick={handleSelect}>
                         {isSelected ? 'Close' : 'Select'}
                     </button>
@@ -94,10 +97,8 @@ const DepartureFlight = ({ flight }) => {
                         {isRoundTrip ? (
                             !selectedDepartureFlight ? (
                                 <button onClick={() => {
-                                    sessionStorage.setItem('departureDate', flight.departureTime)
-                                    console.log("departureDate", flight.departureTime)
-                                    console.log("departureDate", sessionStorage.setItem('departureDateDontChose', flight.departureTime))
                                     chosenFlight(flight, option, false)
+                                    searchReturnFlights(place2, place1, flight?.arrivalTime, sessionStorage.getItem('returnDate'));
                                 }}
                                     className="book">
                                     Book The Departure
@@ -112,7 +113,7 @@ const DepartureFlight = ({ flight }) => {
                         ) : (
                             <Link to="/confirm">
                                 <button
-                                    onClick={() => chosenFlight(flight, option, false)}
+                                    onClick={() => { chosenFlight(flight, option, false) }}
                                     className="book"
                                 >
                                     Book Now

@@ -16,6 +16,14 @@ const OrderFlight = () => {
 
     const { place, searchFlights, place1, place2, isRoundTrip, setIsRoundTrip, searchTermReturn } = useContext(StoreContext);
 
+    useEffect(() => {
+        if (place1 && place2) {
+            setFlight(place1);
+            setDestination(place2);
+            searchFlights(place1, place2, departureDate, returnDate);
+        }
+    }, []);
+
     const handleFlightChange = (e) => {
         setFlight(e);
         setShowOrigin(false);
@@ -42,14 +50,10 @@ const OrderFlight = () => {
     }
 
     const handleSearch = () => {
-        // Lọc chuyến bay dựa trên địa chỉ đã chọn
-        // const result = flights.filter((f) => f.origin === flight && f.destination === destination);
-        // setFilteredFlights(result); 
         sessionStorage.setItem('departureDate', departureDate);
         sessionStorage.setItem('returnDate', returnDate);
         searchFlights(flight, destination, departureDate, returnDate);
     };
-
 
     const wrapperRef = useRef(null);
     useOutsideAlerter(wrapperRef, () => setPasenger(false));
@@ -62,14 +66,14 @@ const OrderFlight = () => {
                     onClick={() => {
 
                         setIsRoundTrip(false)
-                    }}        >
+                    }}>
                     One way
                 </button>
                 <button className={`itinerary ${isRoundTrip ? 'itinerary__active' : ''}`}
                     onClick={() => {
 
                         setIsRoundTrip(true)
-                    }}         >
+                    }}>
                     Round trip
                 </button>
             </div>
@@ -81,7 +85,7 @@ const OrderFlight = () => {
                             name='origin'
                             type="text"
                             placeholder="Origin"
-                            value={!flight ? place1 : flight}
+                            value={flight}
                             onChange={(e) => handleFlightChange(e.target.value)}
                             onFocus={() => {
                                 setShowOrigin(true)
@@ -107,7 +111,7 @@ const OrderFlight = () => {
                             name='destinational'
                             type="text"
                             placeholder="Destination"
-                            value={!destination ? place2 : destination}
+                            value={destination}
                             onChange={(e) => handleDestinationChange(e.target.value)}
                             onFocus={() => {
                                 setShowOrigin(false)

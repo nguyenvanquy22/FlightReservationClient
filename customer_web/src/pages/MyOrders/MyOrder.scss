@@ -2,25 +2,24 @@
     color: black;
     display: flex;
     margin-top: 70px;
-
+    width: 100%;
 }
 
 .sidebar {
-    width: 30%;
     background: #DF0000;
-    padding-left: 300px;
     color: #F7F7F7;
     font-size: 20px;
     font-weight: 500;
+    width: 20%;
+    padding: 20px;
     height: calc(100vh - 70px);
 
     div {
         margin-top: 20px;
         align-items: center;
-        // justify-content: left;
+        justify-content: left;
         padding: 20px;
         display: flex;
-        height: 50px;
         width: 100%;
 
         &:hover {
@@ -34,11 +33,9 @@
 
 .content {
     display: flex;
-    width: 70%;
     background: #F7F7F7;
-    // height: 100vh;
-    padding-right: 300px;
-    padding-left: 20px;
+    width: 100%;
+    padding: 0 50px;
 }
 
 .signout {

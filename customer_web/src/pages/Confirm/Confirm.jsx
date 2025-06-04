@@ -56,7 +56,7 @@ const Confirm = () => {
                                 </div>
                                 <p>{flight.destinationAirport.city}</p>
                                 <span className="basePrice">
-                                    {formatPrice(seatOptions[idx].seatPrice)} VND
+                                    {formatPrice(seatOptions[idx]?.seatPrice || 0)} VND
                                 </span>
                             </div>
                             {/* Transit details */}
