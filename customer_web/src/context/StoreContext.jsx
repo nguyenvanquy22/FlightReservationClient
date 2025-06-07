@@ -168,6 +168,11 @@ const StoreContextProvider = (props) => {
             );
         }
 
+        filteredFlights = filteredFlights.filter(flight =>
+            flight.seatOptions && flight.seatOptions.length > 0 &&
+            flight.seatOptions.some(option => option.availableSeats > 0)
+        )
+
         setNewFlights(filteredFlights);
         setSearchedFlights(filteredFlights);
     };
@@ -191,6 +196,11 @@ const StoreContextProvider = (props) => {
                 flight.departureTime.includes(formattedDate)
             );
         }
+
+        filteredFlights = filteredFlights.filter(flight =>
+            flight.seatOptions && flight.seatOptions.length > 0 &&
+            flight.seatOptions.some(option => option.availableSeats > 0)
+        )
 
         setNewFlights(filteredFlights);
         setSearchedFlights(filteredFlights);

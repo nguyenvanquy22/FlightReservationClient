@@ -21,10 +21,18 @@ const Confirm = () => {
     } = useContext(StoreContext);
 
     const [adults, setAdults] = useState(1);
+    const [limitPassengerCount, setLimitPassengerCount] = useState(1);
 
     useEffect(() => {
         updatePassengerCount(adults);
     }, [adults]);
+
+    useEffect(() => {
+        setLimitPassengerCount(selectedSeatOption?.availableSeats);
+        if (isRoundTrip && returnSeatOption) {
+            setLimitPassengerCount(Math.min(selectedSeatOption?.availableSeats, returnSeatOption?.availableSeats));
+        }
+    }, [selectedSeatOption, returnSeatOption]);
 
     if (!selectedDepartureFlight || !selectedSeatOption) {
         return <p>Please select a flight and seat class first.</p>;
@@ -122,7 +130,7 @@ const Confirm = () => {
                         <div>
                             <button onClick={() => setAdults(a => Math.max(1, a - 1))}>-</button>
                             <p>{adults}</p>
-                            <button onClick={() => setAdults(a => Math.min(10, a + 1))}>+</button>
+                            <button onClick={() => setAdults(a => Math.min(limitPassengerCount, a + 1))}>+</button>
                         </div>
                     </div>
 

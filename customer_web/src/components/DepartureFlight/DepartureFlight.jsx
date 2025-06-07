@@ -10,6 +10,11 @@ const DepartureFlight = ({ flight }) => {
         formatDate, calculateDaysOvernight, formatPrice, isRoundTrip, setIsRoundTrip,
         place1, place2, searchReturnFlights, selectedDepartureFlight,
     } = useContext(StoreContext);
+    const [filteredSeatOptions, setFilteredSeatOptions] = useState([]);
+
+    useEffect(() => {
+        setFilteredSeatOptions(flight.seatOptions.filter(option => option.availableSeats > 0));
+    }, [flight]);
 
     const chosenFlight = async (flight, seatOption, isReturn) => {
         await selectFlight(flight, isReturn);
@@ -20,9 +25,9 @@ const DepartureFlight = ({ flight }) => {
         setIsSelected(!isSelected);
     };
 
-    const minPrice = flight.seatOptions.reduce((min, option) => {
+    const minPrice = filteredSeatOptions.reduce((min, option) => {
         return option.seatPrice < min ? option.seatPrice : min;
-    }, flight.seatOptions[0]?.seatPrice || 0);
+    }, filteredSeatOptions[0]?.seatPrice || 0);
 
     return (
         <div className="departureFlight">
@@ -65,7 +70,7 @@ const DepartureFlight = ({ flight }) => {
             </div>
             <div className={`ticket-show ${isSelected ? 'ticket-show-active' : ''}`}>
                 {/* Hiển thị hoặc ẩn div "selected" */}
-                {flight.seatOptions.map((option, index) => (
+                {filteredSeatOptions.map((option) => (
                     <div key={option.id} className="selected">
                         <div className="seat">
                             <img src={assets.seat}></img>
@@ -192,7 +197,6 @@ const DepartureFlight = ({ flight }) => {
                                     </div>
                                 </div>
                             </div>
-
                         ))}
                     </div>
                 )}
