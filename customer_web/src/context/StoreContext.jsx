@@ -37,10 +37,10 @@ const StoreContextProvider = (props) => {
     const [myOrders, setMyOrders] = useState([]);
 
     // Authentication Functions
-    const login = async (email, password) => {
+    const login = async (username, password) => {
         try {
             const response = await axios.post(`${url}/api/auth/login`, {
-                email,
+                username,
                 password
             });
             const { token, user } = response.data;

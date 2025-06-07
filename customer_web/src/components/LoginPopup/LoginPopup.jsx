@@ -33,7 +33,7 @@ const LoginPopup = ({ setShowLogin }) => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        email: username,
+                        username,
                         password
                     }),
                 });
