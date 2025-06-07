@@ -172,7 +172,7 @@ function Dashboard() {
           <StatisticCard title="Total Users" value={totalUsers} icon="👥" color="#6f42c1" />
           <StatisticCard title="Total Flights" value={totalFlights} icon="✈️" color="#007bff" />
           <StatisticCard title="Total Bookings" value={totalBookings} icon="📑" color="#ffc107" />
-          <StatisticCard title="Total Income" value={`$${totalIncome.toFixed(2)}`} icon="💰" color="#28a745" />
+          <StatisticCard title="Total Income" value={`${totalIncome.toLocaleString('vi-VN')} VND`} icon="💰" color="#28a745" />
         </div>
 
         <div className="charts">
@@ -192,13 +192,13 @@ function Dashboard() {
         </div>
 
         {/* Flights Table */}
-        <TopFlightTable flights={currentFlights} />
+        {/* <TopFlightTable flights={currentFlights} /> */}
 
-        <Pagination
+        {/* <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-        />
+        /> */}
 
       </div>
     </div>

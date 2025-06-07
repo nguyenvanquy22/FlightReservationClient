@@ -73,42 +73,56 @@ const BookingList = () => {
     };
 
     const exportToExcel = () => {
+        // 1. Sort bookings theo ID
+        const sortedBookings = [...bookings].sort((a, b) => a.id - b.id);
 
-        const sortedBookings = [...bookings].sort((a, b) => a.bookingId - b.bookingId);
-
-
-        const formattedData = sortedBookings.map((booking) => {
-            const user = users[booking.user.id] || {};
-            const flight = flights[booking.flightId] || {};
-            const ticketType = booking.bookingTicketType[0]?.ticketType || {};
+        // 2. Chuyển đổi dữ liệu thành dạng flat để xuất Excel
+        const formattedData = sortedBookings.map(booking => {
+            const user = booking.user || {};
+            // Nếu mỗi booking có nhiều tickets, chúng ta nối chuỗi các giá trị lại
+            const flightNumbers = booking.tickets
+                .map(t => t.flightNumber || '')
+                .filter(Boolean)
+                .join('; ');
+            const seatClasses = booking.tickets
+                .map(t => t.seatClassName || '')
+                .filter(Boolean)
+                .join('; ');
+            const passengerNames = booking.tickets
+                .map(t => `${t.passenger.firstName} ${t.passenger.lastName}`)
+                .join('; ');
+            const seatNumbers = booking.tickets
+                .map(t => t.seatNumber || '—')
+                .join('; ');
+            const ticketPrices = booking.tickets
+                .map(t => parseFloat(t.price).toLocaleString('vi-VN'))
+                .join('; ');
+            const luggages = booking.tickets
+                .flatMap(t => t.luggages || [])
+                .map(l => `${l.type} ${l.weight}kg: ${l.price.toLocaleString('vi-VN')}`)
+                .join('; ') || 'No Luggage';
 
             return {
-                "Booking ID": booking.bookingId,
-                "Full Name": user.fullName || "Unknown",
-                "Username": user.username || "Unknown",
-                "Phone Number": user.phoneNumber || "Unknown",
-                "Email": user.email || "Unknown",
-                "Flight Number": flight.flightNumber || "Unknown Flight",
+                "Booking ID": booking.id,
+                "Booking Date": new Date(booking.bookingDate).toLocaleString(),
+                "User Email": user.email || 'Unknown',
                 "Status": booking.status,
-                "Total Price": booking.totalPrice,
-                "Seat Class": ticketType.seatClass || "Unknown",
-                "Ticket Name": ticketType.name || "Unknown",
-                "Luggage": booking.luggage.length > 0
-                    ? booking.luggage.map((lug) => `Price: ${lug.price}, Weight: ${lug.weight}kg`).join("; ")
-                    : "No Luggage",
-                "Passengers": booking.passengers.length > 0
-                    ? booking.passengers.map(
-                        (passenger) => `${passenger.firstName} ${passenger.lastName} (DOB: ${passenger.dateOfBirth})`
-                    ).join("; ")
-                    : "No Passengers",
+                "# Tickets": booking.tickets.length,
+                "Total Price": booking.totalPrice?.toLocaleString('vi-VN'),
+                "Flight Numbers": flightNumbers,
+                "Seat Classes": seatClasses,
+                "Seat Numbers": seatNumbers,
+                "Passenger Names": passengerNames,
+                "Ticket Prices": ticketPrices,
+                "Luggage Details": luggages
             };
         });
 
-
+        // 3. Tạo worksheet và workbook rồi xuất file
         const worksheet = XLSX.utils.json_to_sheet(formattedData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Bookings");
-        XLSX.writeFile(workbook, "bookings.xlsx");
+        XLSX.writeFile(workbook, "Bookings_List.xlsx");
     };
 
     const filteredBookings = bookings.filter((booking) => {

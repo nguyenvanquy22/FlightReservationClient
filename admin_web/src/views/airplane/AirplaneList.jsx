@@ -161,8 +161,28 @@ const AirplaneList = () => {
 
 
     const exportToExcel = () => {
-        setAirplanes(airplanes.sort((a, b) => a.id - b.id))
-        const worksheet = XLSX.utils.json_to_sheet(airplanes);
+        // Sắp xếp airplanes theo id
+        const sortedAirplanes = [...airplanes].sort((a, b) => a.id - b.id);
+
+        // Chuyển đổi dữ liệu theo định dạng mới để export
+        const exportData = sortedAirplanes.map(airplane => {
+            // Tính tổng số ghế
+            const totalSeats = airplane.seatClassAirplanes.reduce((sum, sca) => {
+                return sum + (sca.rowCount * sca.columnCount);
+            }, 0);
+
+            return {
+                ID: airplane.id,
+                Model: airplane.model,
+                RegistrationCode: airplane.registrationCode,
+                Airline: airplane.airline.name,
+                Status: airplane.status,
+                TotalSeats: totalSeats
+            };
+        });
+
+        // Tạo file Excel
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Airplanes");
         XLSX.writeFile(workbook, "Airplanes_List.xlsx");

@@ -14,7 +14,7 @@ const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
                         <th colSpan="4">Departure</th>
                         <th colSpan="4">Arrival</th>
                         <th rowSpan="2">Status</th>
-                        <th colSpan="3">Transit Points</th>
+                        {/* <th colSpan="3">Transit Points</th> */}
                         <th rowSpan="2">Actions</th>
                     </tr>
                     <tr>
@@ -30,9 +30,9 @@ const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
                         <th>Arrival City</th>
                         <th>Arrival Country</th>
                         <th>Arrival Time</th>
-                        <th>Transit Airport</th>
+                        {/* <th>Transit Airport</th>
                         <th>Arrival</th>
-                        <th>Departure</th>
+                        <th>Departure</th> */}
                     </tr>
                 </thead>
                 <tbody>
@@ -59,11 +59,12 @@ const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
                             <td>{flight.status}</td>
 
                             {/* Transit Points - Arrival and Departure */}
-                            <td>
+                            {/* <td>
                                 {flight?.transits?.length > 0 ? (
-                                    flight.transits.map(point => (
+                                    flight.transits.map((point, index) => (
                                         <div key={point?.id}>
                                             {airports?.find(airport => point.airportId === airport.id)?.name}
+                                            {index != flight.transits.length - 1 && <hr />}
                                         </div>
                                     ))
                                 ) : (
@@ -72,9 +73,10 @@ const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
                             </td>
                             <td>
                                 {flight?.transits?.length > 0 ? (
-                                    flight.transits.map(point => (
+                                    flight.transits.map((point, index) => (
                                         <div key={point?.id}>
                                             {new Date(point?.arrivalTime).toLocaleString()}
+                                            {index != flight.transits.length - 1 && <hr />}
                                         </div>
                                     ))
                                 ) : (
@@ -83,15 +85,16 @@ const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
                             </td>
                             <td>
                                 {flight?.transits?.length > 0 ? (
-                                    flight.transits.map(point => (
+                                    flight.transits.map((point, index) => (
                                         <div key={point?.id}>
                                             {new Date(point?.departureTime).toLocaleString()}
+                                            {index != flight.transits.length - 1 && <hr />}
                                         </div>
                                     ))
                                 ) : (
                                     'None'
                                 )}
-                            </td>
+                            </td> */}
 
                             <td>
                                 <button onClick={() => onEdit(flight)} className="edit_button">Edit</button>

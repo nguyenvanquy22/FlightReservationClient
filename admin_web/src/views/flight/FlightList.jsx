@@ -85,34 +85,28 @@ const Flightlist = () => {
     };
 
     const handleExportToExcel = () => {
-        const sortedFlights = [...flights].sort((a, b) => a.flightId - b.flightId);
+        const sortedFlights = [...flights].sort((a, b) => a.id - b.id);
 
         const exportData = sortedFlights.map(flight => ({
-            "Flight ID": flight.flightId,
+            "Flight ID": flight.id,
             "Flight Number": flight.flightNumber,
             "Airplane Model": flight.airplane?.model || 'Unknown',
-            "Total Seats": flight.airplane?.totalSeats || 'Unknown',
-            "Airline Name": flight.airline?.name || 'Unknown',
-            "Airline Code": flight.airline?.code || 'Unknown',
-            "Departure Airport": flight.departureAirport?.airportName || 'Unknown',
-            "Departure City": flight.departureAirport?.city || 'Unknown',
-            "Departure Country": flight.departureAirport?.country || 'Unknown',
+            "Airline Name": flight.airplane.airline?.name || 'Unknown',
+            "Departure Airport": flight.originAirport?.name || 'Unknown',
+            "Departure City": flight.originAirport?.city || 'Unknown',
+            "Departure Country": flight.originAirport?.country || 'Unknown',
             "Departure Time": new Date(flight.departureTime).toLocaleString(),
-            "Arrival Airport": flight.arrivalAirport?.airportName || 'Unknown',
-            "Arrival City": flight.arrivalAirport?.city || 'Unknown',
-            "Arrival Country": flight.arrivalAirport?.country || 'Unknown',
+            "Arrival Airport": flight.destinationAirport?.name || 'Unknown',
+            "Arrival City": flight.destinationAirport?.city || 'Unknown',
+            "Arrival Country": flight.destinationAirport?.country || 'Unknown',
             "Arrival Time": new Date(flight.arrivalTime).toLocaleString(),
-            "Base Price": flight.basePrice,
             "Status": flight.status,
-            "Transit Points": flight.transitPointList.map(point =>
-                `${point.airport?.airportName} (${point.airport?.city}, ${point.airport?.country}) - Arrival: ${new Date(point?.arrivalTime).toLocaleString()} - Departure: ${new Date(point?.departureTime).toLocaleString()}`
-            ).join('; ')
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Flights");
-        XLSX.writeFile(workbook, "flight_list.xlsx");
+        XLSX.writeFile(workbook, "flights_list.xlsx");
     };
 
     const handleEdit = (flight) => {

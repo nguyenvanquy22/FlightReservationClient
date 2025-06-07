@@ -6,7 +6,7 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
         <table className="user-table">
             <thead>
                 <tr>
-                    <th>Email</th>
+                    <th>Username</th>
                     <th>Role</th>
                     <th>Date created</th>
                     <th>Date updated</th>
@@ -23,9 +23,6 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
                         <td>
                             <button onClick={() => onEdit(user)} className="edit-button">Edit</button>
                             <button onClick={() => onDelete(user.id)} className="delete-button">Delete</button>
-                            <Link to={`/details/${user.id}`}>
-                                <button className="details-button">Details</button>
-                            </Link>
                         </td>
                     </tr>
                 ))}

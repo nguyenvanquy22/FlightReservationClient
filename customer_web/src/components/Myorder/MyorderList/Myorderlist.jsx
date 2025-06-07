@@ -49,7 +49,7 @@ const Myorderlist = () => {
                         <BookingItem key={booking.id} booking={booking} />
                     ))}
 
-                    {myOrders.length === 0 && <p>Bạn chưa có đơn nào.</p>}
+                    {myOrders.length === 0 && <p className='empty-orders'>Bạn chưa có đơn nào.</p>}
                 </div>
 
                 {totalPages > 1 && (
