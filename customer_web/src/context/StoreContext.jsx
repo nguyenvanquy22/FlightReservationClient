@@ -5,7 +5,7 @@ import React, { createContext, useEffect, useState } from 'react';
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-    const url = 'http://localhost:8080';
+    const url = 'https://flight-reservation-server.onrender.com';
 
     // User and Authentication State
     const [token, setToken] = useState(localStorage.getItem('customerToken') || '');

@@ -9,7 +9,7 @@ export default defineConfig({
     port: 4000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://flight-reservation-server.onrender.com',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')

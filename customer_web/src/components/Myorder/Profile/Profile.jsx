@@ -147,12 +147,12 @@ const Profile = () => {
 
     const handleEditOrSave = async (e) => {
         e.preventDefault();
-    
+
         // Kiểm tra tính hợp lệ của các trường trong form
         const form = e.target.closest("form"); // Lấy phần tử form chứa nút submit
         const emailValid = form.email.checkValidity();
         const phoneValid = /^[0-9]+$/.test(form.phoneNumber.value); // Regex kiểm tra số điện thoại chỉ chứa số
-    
+
         // Kiểm tra tính hợp lệ của form
         if (!form.checkValidity()) {
             let errorMessage = "";
@@ -167,15 +167,15 @@ const Profile = () => {
                 return; // Nếu có lỗi, dừng lại
             }
         }
-    
+
         // Xác nhận trước khi lưu
         if (isEditingProfile) {
             const isConfirmed = window.confirm("Are you sure about that?");
             if (!isConfirmed) return;
-    
+
             try {
                 const response = await axios.put(
-                    `http://localhost:8080/api/users/${localStorage.getItem("userId")}`,
+                    `https://flight-reservation-server.onrender.com/api/users/${localStorage.getItem("userId")}`,
                     { ...formData },
                     {
                         headers: {
@@ -191,7 +191,7 @@ const Profile = () => {
         }
         setIsEditingProfile(!isEditingProfile); // Chuyển đổi chế độ chỉnh sửa
     };
-    
+
 
     return (
         <div className="profile-container">

@@ -85,7 +85,7 @@ const Navbar = ({ setShowLogin }) => {
                     {!tontai ?
                         <li onClick={() => setShowLogin(true)}>Sign-In</li>
                         :
-                        <h4>{user.email}</h4>
+                        <h4>{user.username}</h4>
                     }
                     {/* <li onClick={() => setShowLogin(true)}><h4>john_doe</h4></li> */}
 

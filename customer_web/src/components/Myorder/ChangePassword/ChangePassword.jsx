@@ -66,12 +66,12 @@ const ChangePassword = () => {
     //           return;
     //         }
 
-          
+
     //         console.log('Kết quả:', 'Khớp');
     //         // Tiếp tục xử lý khi mật khẩu khớp
     //       });
-          
-          
+
+
     //     // Check new password and confirmation match
     //     if (passwords.newPassword !== passwords.confirmPassword) {
     //         setError("New password and confirmation do not match.");
@@ -98,7 +98,7 @@ const ChangePassword = () => {
     //                 confirm: false,
     //             });
     //             setError(""); // Clear any error
-    
+
     //             // Update user in context after successful password change
     //             setUser(updatedUser);
     //         } catch (error) {
@@ -112,19 +112,19 @@ const ChangePassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Validate input fields
         if (!passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword) {
             setError("Please fill out all fields.");
             return;
         }
-    
+
         // Check new password and confirmation match
         if (passwords.newPassword !== passwords.confirmPassword) {
             setError("New password and confirmation do not match.");
             return;
         }
-    
+
         // Validate current password using bcrypt
         bcrypt.compare(passwords.currentPassword, user.password, async (err, result) => {
             if (err) {
@@ -132,24 +132,24 @@ const ChangePassword = () => {
                 setError('An error occurred while checking the password.');
                 return;
             }
-    
+
             if (!result) {
                 setError("Current password is incorrect.");
                 return;
             }
-    
+
             console.log('Password matched. Proceeding to update.');
-    
+
             // If password matches, update user information
             const updatedUser = {
                 ...user,
                 password: passwords.newPassword, // Update only the password
             };
-    
+
             try {
                 // Send PUT request to update password
                 const response = await axios.put(
-                    `http://localhost:8080/api/users/${user.id}`,
+                    `https://flight-reservation-server.onrender.com/api/users/${user.id}`,
                     updatedUser,
                     {
                         headers: {
@@ -157,13 +157,13 @@ const ChangePassword = () => {
                         },
                     }
                 );
-    
+
                 setSuccessMessage("Password changed successfully.");
                 setError(""); // Clear any error
-    
+
                 // Update user in context
                 setUser(updatedUser);
-    
+
                 // Clear password fields
                 setPasswords({
                     currentPassword: "",
@@ -177,7 +177,7 @@ const ChangePassword = () => {
             }
         });
     };
-    
+
 
     let isLoggedIn = false;
     if (localStorage.getItem('userId')) {

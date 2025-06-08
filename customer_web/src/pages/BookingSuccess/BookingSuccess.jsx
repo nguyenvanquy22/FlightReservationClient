@@ -19,7 +19,7 @@ const BookingSuccess = () => {
         const fetchBooking = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:8080/api/bookings/${bookingId}`,
+                    `https://flight-reservation-server.onrender.com/api/bookings/${bookingId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }

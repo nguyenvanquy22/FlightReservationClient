@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:8080/",
+  "proxy": "https://flight-reservation-server.onrender.com",
   "scripts": {
     "dev": "node clearLocalStorage.js && vite",
     "build": "vite build",
