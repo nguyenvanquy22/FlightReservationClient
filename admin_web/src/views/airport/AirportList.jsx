@@ -7,6 +7,7 @@ import AirportForm from '../../components/form/AirportForm';
 import AirportTable from '../../components/tables/AirportTable';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 
 const { SERVER_API } = config;
 
@@ -15,12 +16,13 @@ const AirportList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const airportsPerPage = 5;
     const [airports, setAirports] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [currentAirport, setCurrentAirport] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     // Fetch all airports data
     const fetchAirports = async () => {
+        setLoading(true);
         try {
             const response = await fetchWithToken(`${SERVER_API}/airports`);
             const data = await response.json();
@@ -199,7 +201,7 @@ const AirportList = () => {
     const totalPages = Math.ceil(filteredAirports.length / airportsPerPage);
 
     if (loading) {
-        return <div>Loading airports...</div>;
+        return <Loading />;
     }
 
     return (

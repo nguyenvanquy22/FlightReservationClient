@@ -7,6 +7,7 @@ import AirlineForm from '../../components/form/AirlineForm';
 import AirlineTable from '../../components/tables/AirlineTable';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 const { SERVER_API } = config;
 
 const AirlineList = () => {
@@ -14,13 +15,14 @@ const AirlineList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const airlinesPerPage = 5;
     const [airlines, setAirlines] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [currentAirline, setCurrentAirline] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     // Fetch all airlines
 
     const fetchAirlines = async () => {
+        setLoading(true);
         try {
             const response = await fetchWithToken(`${SERVER_API}/airlines`);
             const data = await response.json();
@@ -177,7 +179,7 @@ const AirlineList = () => {
     const totalPages = Math.ceil(filteredAirlines.length / airlinesPerPage);
 
     if (loading) {
-        return <div>Loading airlines...</div>;
+        return <Loading />;
     }
 
     return (

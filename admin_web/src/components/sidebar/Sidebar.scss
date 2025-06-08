@@ -47,3 +47,10 @@
 .logout:hover {
     background-color: #ce0707 !important;
 }
+
+.sidebar a.active {
+    background-color: #1e90ff;
+    /* màu xanh dương hoặc tùy bạn */
+    font-weight: bold;
+    transform: translateX(5px);
+}

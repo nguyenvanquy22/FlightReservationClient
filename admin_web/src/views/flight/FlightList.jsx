@@ -7,6 +7,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import FlightForm from '../../components/form/FlightForm';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 const { SERVER_API } = config;
 
 const Flightlist = () => {
@@ -14,50 +15,40 @@ const Flightlist = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const flightsPerPage = 5;
     const [flights, setFlights] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [currentFlight, setCurrentFlight] = useState(null);
     const [airplanes, setAirplanes] = useState([]);
-    const [airlines, setAirlines] = useState([]);
     const [airports, setAirports] = useState([]);
     const [transitPoints, setTransitPoints] = useState([]);
     const [showTransitPointFields, setShowTransitPointFields] = useState(false);
 
-    const fetchFlights = async () => {
-        try {
-            const flightRes = await fetchWithToken(`${SERVER_API}/flights`);
-            const flightData = await flightRes.json();
-            const sortedData = flightData.data.sort((a, b) => b.id - a.id);
-            setFlights(sortedData);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching flights:', error);
-            setLoading(false);
-        }
-    };
-    const fetchAdditionalData = async () => {
-        try {
-            const [airplaneRes, airlineRes, airportRes] = await Promise.all([
-                fetchWithToken(`${SERVER_API}/airplanes`),
-                fetchWithToken(`${SERVER_API}/airlines`),
-                fetchWithToken(`${SERVER_API}/airports`)
-            ]);
-
-            const airplaneData = await airplaneRes.json();
-            const airlineData = await airlineRes.json();
-            const airportData = await airportRes.json();
-
-            setAirplanes(airplaneData.data);
-            setAirlines(airlineData.data);
-            setAirports(airportData.data);
-        } catch (error) {
-            console.error('Error fetching additional data:', error);
-        }
-    };
-
     useEffect(() => {
-        fetchFlights();
-        fetchAdditionalData();
+        const fetchAllData = async () => {
+            setLoading(true);
+            try {
+                const [flightRes, airplaneRes, airportRes] = await Promise.all([
+                    fetchWithToken(`${SERVER_API}/flights`),
+                    fetchWithToken(`${SERVER_API}/airplanes`),
+                    fetchWithToken(`${SERVER_API}/airports`)
+                ]);
+
+                const flightData = await flightRes.json();
+                const airplaneData = await airplaneRes.json();
+                const airportData = await airportRes.json();
+
+                const sortedFlights = flightData.data.sort((a, b) => b.id - a.id);
+                setFlights(sortedFlights);
+                setAirplanes(airplaneData.data);
+                setAirports(airportData.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false); // luôn chạy cuối cùng
+            }
+        };
+
+        fetchAllData();
     }, []);
 
     const handleAddTransitPoint = () => {
@@ -288,7 +279,7 @@ const Flightlist = () => {
     const totalPages = Math.ceil(filteredFlights.length / flightsPerPage);
 
     if (loading) {
-        return <div>Loading flights...</div>;
+        return <Loading />;
     }
 
     return (
@@ -316,7 +307,6 @@ const Flightlist = () => {
                     <FlightForm
                         currentFlight={currentFlight}
                         airplanes={airplanes}
-                        airlines={airlines}
                         airports={airports}
                         transitPoints={transitPoints}
                         setTransitPoints={setTransitPoints}
@@ -330,7 +320,6 @@ const Flightlist = () => {
 
                 <FlightListTable
                     currentFlights={currentFlights}
-                    airports={airports}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                 />

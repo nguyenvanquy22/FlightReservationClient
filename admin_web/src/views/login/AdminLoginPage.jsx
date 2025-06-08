@@ -7,9 +7,11 @@ const AdminLoginPage = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const response = await fetch("https://flight-reservation-server.onrender.com/api/auth/login", {
                 method: "POST",
@@ -39,6 +41,8 @@ const AdminLoginPage = () => {
             }
         } catch (error) {
             setError("Server error. Please try again later.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -73,7 +77,7 @@ const AdminLoginPage = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="admin-login-button">Login</button>
+                <button type="submit" disabled={isLoading} className="admin-login-button">{isLoading ? 'Login...' : 'Login'}</button>
             </form>
         </div>
     );

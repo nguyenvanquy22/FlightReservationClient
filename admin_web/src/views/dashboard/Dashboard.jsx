@@ -11,6 +11,7 @@ import './Dashboard.scss';
 
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 const { SERVER_API } = config;
@@ -27,57 +28,46 @@ function Dashboard() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
-  // Fetch bookings
-  const fetchBookings = async () => {
-    try {
-      const response = await fetchWithToken(`${SERVER_API}/bookings`);
-      const data = await response.json();
-      const confirmedBookings = data.data.filter(booking => booking.status === 'CONFIRMED');
-      setBookings(confirmedBookings);
-      setbookingall(data);
-      // console.log(data.length)
-      // console.log(confirmedBookings.length)
-
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-    }
-  };
-
-  // Fetch flights
-  const fetchFlights = async () => {
-    try {
-      const response = await fetchWithToken(`${SERVER_API}/flights`);
-      const data = await response.json();
-      setFlights(data.data);
-    } catch (error) {
-      console.error('Error fetching flights:', error);
-    }
-  };
-
-  // Fetch users
-  const fetchUsers = async () => {
-    try {
-      const response = await fetchWithToken(`${SERVER_API}/users`);
-      const data = await response.json();
-      setUsers(data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchBookings();
-    fetchFlights();
-    fetchUsers();
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        const [bookingsRes, flightsRes, usersRes] = await Promise.all([
+          fetchWithToken(`${SERVER_API}/bookings`),
+          fetchWithToken(`${SERVER_API}/flights`),
+          fetchWithToken(`${SERVER_API}/users`)
+        ]);
+
+        const bookingsData = await bookingsRes.json();
+        const flightsData = await flightsRes.json();
+        const usersData = await usersRes.json();
+
+        // Handle bookings
+        const confirmedBookings = bookingsData.data.filter(
+          (booking) => booking.status === 'CONFIRMED'
+        );
+        setBookings(confirmedBookings);
+        setbookingall(bookingsData);
+
+        // Handle flights
+        setFlights(flightsData.data);
+
+        // Handle users
+        setUsers(usersData.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false); // đảm bảo chạy cuối cùng
+      }
+    };
+
+    fetchAllData();
   }, []);
 
   const totalUsers = users.length;
   const totalFlights = flights.length;
   const totalBookings = bookings.length;
   const totalIncome = bookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
-
 
   const calculateRevenue = (type) => {
     const revenueByTime = {};
@@ -126,7 +116,6 @@ function Dashboard() {
   const getTopFlights = () => {
     const flightCountMap = {};
 
-
     bookings.forEach((booking) => {
       if (booking.status === 'CONFIRMED') {
         const flightId = booking.flightId;
@@ -134,12 +123,10 @@ function Dashboard() {
       }
     });
 
-
     const topFlightIds = Object.entries(flightCountMap)
       .sort(([, countA], [, countB]) => countB - countA)
       .slice(0, 10)
       .map(([flightId]) => parseInt(flightId));
-
 
     const topFlightsWithCount = flights
       .filter(flight => topFlightIds.includes(flight.id))
@@ -147,7 +134,7 @@ function Dashboard() {
         ...flight,
         bookingCount: flightCountMap[flight.id]
       }));
-    // console.log(topFlightsWithCount)
+
     return topFlightsWithCount;
   };
 
@@ -161,9 +148,9 @@ function Dashboard() {
   const totalPages = Math.ceil(topFlights.length / flightsPerPage);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
-  // console.log(topFlights)
+
   return (
     <div className="dashboard-container">
       <Header title={'Dashboard'} />

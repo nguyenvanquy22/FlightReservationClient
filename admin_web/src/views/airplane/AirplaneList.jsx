@@ -7,6 +7,7 @@ import AirplaneTable from '../../components/tables/AirplaneTable';
 import Pagination from '../../components/Pagination/Pagination';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 
 const { SERVER_API } = config;
 
@@ -15,12 +16,13 @@ const AirplaneList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const airplanesPerPage = 5;
     const [airplanes, setAirplanes] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [currentAirplane, setCurrentAirplane] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
 
     const fetchAirplanes = async () => {
+        setLoading(true);
         try {
             const response = await fetchWithToken(`${SERVER_API}/airplanes`);
             const data = await response.json();
@@ -198,7 +200,7 @@ const AirplaneList = () => {
     const totalPages = Math.ceil(filteredAirplanes.length / airplanesPerPage);
 
     if (loading) {
-        return <div>Loading airplanes...</div>;
+        return <Loading />;
     }
 
     return (

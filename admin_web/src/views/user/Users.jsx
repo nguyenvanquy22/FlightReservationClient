@@ -7,6 +7,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import UserForm from '../../components/form/UserForm';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 
 const { SERVER_API } = config;
 
@@ -16,7 +17,7 @@ function Users() {
     const usersPerPage = 5;
     const [users, setUsers] = useState([]);
     const [bookings, setBookings] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState("add"); // "add" hoặc "edit"
     const [currentUser, setCurrentUser] = useState(null);
@@ -45,8 +46,9 @@ function Users() {
             setUsers(data.data.sort((a, b) => b.id - a.id)); // Sắp xếp giảm dần theo ID
         } catch (error) {
             console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const openForm = (type, user = null) => {
@@ -254,7 +256,7 @@ function Users() {
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
     if (loading) {
-        return <div>Loading data...</div>;
+        return <Loading />;
     }
 
     return (

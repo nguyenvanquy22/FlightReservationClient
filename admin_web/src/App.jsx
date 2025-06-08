@@ -32,9 +32,7 @@ function App() {
   return (
     <Router>
       <Routes>
-
         <Route path="/login" element={<AdminLoginPage />} />
-
         <Route
           path="/*"
           element={

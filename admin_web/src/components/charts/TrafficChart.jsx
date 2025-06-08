@@ -10,7 +10,7 @@ const { SERVER_API } = config;
 const TrafficChart = () => {
     const [data, setData] = useState([]);
     const [year, setYear] = useState(new Date().getFullYear());
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const getPastTenYears = () => {
         const currentYear = new Date().getFullYear();
@@ -79,7 +79,9 @@ const TrafficChart = () => {
     };
 
     if (loading) {
-        return <div className="loading">Loading chart...</div>;
+        return <div className="loading" style={{ textAlign: 'center', margin: '50px 0' }}>
+            Loading chart...
+        </div>;
     }
 
     return (

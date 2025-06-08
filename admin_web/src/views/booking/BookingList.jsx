@@ -6,26 +6,25 @@ import BookingTable from '../../components/tables/BookingTable';
 import Pagination from '../../components/Pagination/Pagination';
 import { fetchWithToken } from '../fetchWithToken';
 import Header from '../../components/header/Header';
+import Loading from '../../components/loading/Loading';
 
 const { SERVER_API } = config;
 
 const BookingList = () => {
     const [bookings, setBookings] = useState([]);
-    const [users, setUsers] = useState({});
-    const [flights, setFlights] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchTerm, setSearchTerm] = useState(""); // For search
     const bookingsPerPage = 10;
+    const [loading, setLoading] = useState(false);
 
     // Fetching data on initial render and every 30 seconds
     useEffect(() => {
         fetchBookings();
-        fetchUsers();
-        fetchFlights();
     }, [currentPage]);
 
     const fetchBookings = async () => {
+        setLoading(true);
         try {
             const response = await fetchWithToken(`${SERVER_API}/bookings`);
             const data = await response.json();
@@ -33,42 +32,8 @@ const BookingList = () => {
             setTotalPages(Math.ceil(data.length / bookingsPerPage));
         } catch (error) {
             console.error('Error fetching booking list:', error);
-        }
-    };
-
-    const fetchUsers = async () => {
-        try {
-            const response = await fetchWithToken(`${SERVER_API}/users`);
-            const data = await response.json();
-            const userMap = {};
-            data.data.forEach(user => {
-                userMap[user.id] = {
-                    fullName: `${user.firstName} ${user.lastName}`,
-                    phoneNumber: user.phoneNumber,
-                    email: user.email,
-                    username: user.username,
-                };
-            });
-            setUsers(userMap);
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    };
-
-    const fetchFlights = async () => {
-        try {
-            const response = await fetchWithToken(`${SERVER_API}/flights`);
-            const data = await response.json();
-            const flightMap = {};
-            data.data.forEach(flight => {
-                flightMap[flight.flightId] = {
-                    flightNumber: flight.flightNumber,
-                    basePrice: flight.basePrice,
-                };
-            });
-            setFlights(flightMap);
-        } catch (error) {
-            console.error('Error fetching flights:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -107,7 +72,7 @@ const BookingList = () => {
                 "Booking Date": new Date(booking.bookingDate).toLocaleString(),
                 "User Email": user.email || 'Unknown',
                 "Status": booking.status,
-                "# Tickets": booking.tickets.length,
+                "Tickets": booking.tickets.length,
                 "Total Price": booking.totalPrice?.toLocaleString('vi-VN'),
                 "Flight Numbers": flightNumbers,
                 "Seat Classes": seatClasses,
@@ -145,6 +110,10 @@ const BookingList = () => {
     const paginatedBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
     const totalFilteredPages = Math.ceil(filteredBookings.length / bookingsPerPage);
 
+    if (loading) {
+        return <Loading />;
+    }
+
     return (
         <div className="container">
             <Header title={'Bookings'} />
@@ -163,7 +132,7 @@ const BookingList = () => {
 
                 <button className="export-button" onClick={exportToExcel}>Export to Excel</button>
 
-                <BookingTable bookings={paginatedBookings} users={users} flights={flights} />
+                <BookingTable bookings={paginatedBookings} />
 
                 <Pagination
                     currentPage={currentPage}

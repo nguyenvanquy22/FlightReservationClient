@@ -1,9 +1,7 @@
 import React from 'react';
 import './styles/FlightListTable.scss';
 
-const FlightListTable = ({ airports, currentFlights, onEdit, onDelete }) => {
-
-    console.log('Airports:', airports);
+const FlightListTable = ({ currentFlights, onEdit, onDelete }) => {
 
     return (
         <div className="table-responsive">
