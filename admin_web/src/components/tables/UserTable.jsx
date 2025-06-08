@@ -7,6 +7,8 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
             <thead>
                 <tr>
                     <th>Username</th>
+                    <th>Phone number</th>
+                    <th>Email</th>
                     <th>Role</th>
                     <th>Date created</th>
                     <th>Date updated</th>
@@ -16,6 +18,8 @@ function UserTable({ currentUsers, onEdit, onDelete }) {
             <tbody>
                 {currentUsers.map((user) => (
                     <tr key={user.id}>
+                        <td>{user.username}</td>
+                        <td>{user.phoneNumber}</td>
                         <td>{user.email}</td>
                         <td>{user.role}</td>
                         <td>{new Date(user.createdAt).toLocaleString()}</td>

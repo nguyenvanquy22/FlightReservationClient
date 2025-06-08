@@ -14,7 +14,7 @@ const BookingTable = ({ bookings }) => {
                     <th rowSpan="2">Booking Date</th>
                     <th rowSpan="2">User</th>
                     <th rowSpan="2">Status</th>
-                    <th rowSpan="2"># Tickets</th>
+                    <th rowSpan="2">Tickets</th>
                     <th rowSpan="2">Total Price</th>
                     <th colSpan="6">Tickets Detail</th>
                 </tr>
@@ -38,7 +38,7 @@ const BookingTable = ({ bookings }) => {
                                 <>
                                     <td rowSpan={booking.tickets.length}>{booking.id}</td>
                                     <td rowSpan={booking.tickets.length}>{formatDate(booking.bookingDate)}</td>
-                                    <td rowSpan={booking.tickets.length}>{booking.user.email}</td>
+                                    <td rowSpan={booking.tickets.length}>{booking.user.username}</td>
                                     <td rowSpan={booking.tickets.length}>{booking.status}</td>
                                     <td rowSpan={booking.tickets.length}>{booking.tickets.length}</td>
                                     <td rowSpan={booking.tickets.length}>{booking.totalPrice?.toLocaleString('vi-VN')} VND</td>

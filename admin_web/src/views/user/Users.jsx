@@ -84,81 +84,96 @@ function Users() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const formData = new FormData(e.target);
 
         const userData = {
             email: formData.get('email')?.trim(),
-            password: formData.get('password')?.trim() || (formType === "edit" ? currentUser?.password : ""), // Lấy password từ currentUser nếu form là edit
+            password: formData.get('password')?.trim(),
             role: formData.get('role')?.trim() || "CUSTOMER",
+            firstName: formData.get('firstName')?.trim(),
+            lastName: formData.get('lastName')?.trim(),
+            username: formData.get('username')?.trim(),
+            phoneNumber: formData.get('phoneNumber')?.trim(),
         };
 
         const errors = {};
 
-        // Validation
+        // Validate email
         if (!userData.email) {
             errors.email = "Email is required.";
         } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
             errors.email = "Please enter a valid email address.";
         }
 
-        if (!userData.role) {
-            errors.role = "Role selection is required.";
-        }
-
+        // Check duplicate email (avoid if same as current user)
         const duplicateEmail = users.find(
             (user) => user.email.toLowerCase() === userData.email.toLowerCase() &&
                 user.id !== currentUser?.id
         );
-
         if (duplicateEmail) {
             errors.email = "This email is already in use.";
         }
 
+        // Validate role
+        if (!userData.role) {
+            errors.role = "Role selection is required.";
+        }
+
+        // Optional: Validate username, first/last name
+        if (!userData.username) errors.username = "Username is required.";
+        if (!userData.firstName) errors.firstName = "First name is required.";
+        if (!userData.lastName) errors.lastName = "Last name is required.";
+        if (!userData.phoneNumber) errors.phoneNumber = "Phone number is required.";
+
+        // Check if anything changed
         const hasChanges = () => {
             if (!currentUser) return true;
-
-            // So sánh từng trường của userData với currentUser
             return (
                 userData.email !== currentUser.email ||
-                userData.password !== currentUser.password ||
-                userData.role !== currentUser.role
+                userData.password !== "" ||
+                userData.role !== currentUser.role ||
+                userData.firstName !== currentUser.firstName ||
+                userData.lastName !== currentUser.lastName ||
+                userData.username !== currentUser.username ||
+                userData.phoneNumber !== currentUser.phoneNumber
             );
         };
 
-        if (!hasChanges) {
-            if (userData.password) {
-                if (userData.password.length < 5 || userData.password.length > 16) {
-                    errors.password = "Password must be between 5 and 16 characters.";
-                } else if (!/[a-zA-Z]/.test(userData.password) || !/\d/.test(userData.password)) {
-                    errors.password = "Password must contain at least one letter and one number.";
-                } else if (/\s/.test(userData.password)) {
-                    errors.password = "Password cannot contain spaces.";
-                }
-            } else {
+        const isEdit = formType === "edit";
+
+        // Validate password when creating or password changed
+        const shouldValidatePassword = !isEdit || (isEdit && userData.password);
+        if (shouldValidatePassword) {
+            if (!userData.password) {
                 errors.password = "Password is required.";
+            } else if (userData.password.length < 5 || userData.password.length > 16) {
+                errors.password = "Password must be between 5 and 16 characters.";
+            } else if (!/[a-zA-Z]/.test(userData.password) || !/\d/.test(userData.password)) {
+                errors.password = "Password must contain at least one letter and one number.";
+            } else if (/\s/.test(userData.password)) {
+                errors.password = "Password cannot contain spaces.";
             }
         }
 
-        if (formType === "edit" && !hasChanges()) {
+        if (isEdit && !hasChanges()) {
             alert("No changes detected. Please make changes before submitting.");
             return;
         }
 
+        // Show error
         if (Object.keys(errors).length > 0) {
             setErrorMessage(errors);
             return;
         }
-        // console.log(userData)
+
         try {
             let response;
-            if (formType === "edit") {
-                if (userData.password == currentUser.password) {
-                    userData.password = "";
-                }
-            }
-            if (formType === "edit" && currentUser) {
 
+            if (isEdit && currentUser) {
+                // Nếu password không thay đổi thì không gửi password
+                if (!userData.password) {
+                    delete userData.password;
+                }
                 response = await fetchWithToken(`${SERVER_API}/users/${currentUser.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -173,7 +188,7 @@ function Users() {
             }
 
             if (response.ok) {
-                alert(currentUser ? "User updated successfully" : "User added successfully");
+                alert(isEdit ? "User updated successfully" : "User added successfully");
                 setErrorMessage([]);
                 setShowForm(false);
                 fetchUsers();
