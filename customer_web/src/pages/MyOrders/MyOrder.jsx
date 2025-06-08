@@ -21,7 +21,7 @@ const MyOrder = () => {
                 <div className="signout" onClick={() => {
                     setToken(false)
                     localStorage.removeItem('userId')
-                    setUser("")
+                    setUser({})
                 }}>Sign out</div>
             </div>
             <div className="content">

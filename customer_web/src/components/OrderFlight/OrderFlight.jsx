@@ -1,9 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import './OrderFlight.scss'
 import { Link, Route, Routes } from "react-router-dom";
-import StoreContextProvider, { StoreContext } from "../../context/StoreContext";
-// import { useContext } from "react";
-// import StoreContextProvider from "../../context/StoreContext";
+import { StoreContext } from "../../context/StoreContext";
 
 const OrderFlight = () => {
     const [showOrigin, setShowOrigin] = useState(false);
@@ -91,6 +89,9 @@ const OrderFlight = () => {
                                 setShowOrigin(true)
                                 setShowSuggestions(false)
                             }}
+                            onBlur={() => {
+                                setTimeout(() => setShowOrigin(false), 200);
+                            }}
                             required
                         />
                         {showOrigin && (
@@ -116,6 +117,9 @@ const OrderFlight = () => {
                             onFocus={() => {
                                 setShowOrigin(false)
                                 setShowSuggestions(true)
+                            }}
+                            onBlur={() => {
+                                setTimeout(() => setShowSuggestions(false), 200);
                             }}
                             required
                         />

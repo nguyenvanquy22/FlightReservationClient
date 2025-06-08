@@ -12,10 +12,11 @@ const Navbar = ({ setShowLogin }) => {
     const location = useLocation();
 
     useEffect(() => {
+        setMenu(location.pathname.split('/')[1] || "home");
         const handleScroll = () => {
-            if (location.pathname === '/myorder') {
+            if (location.pathname === '/my-orders') {
                 setScrolled(true);
-            } else if (location.pathname.startsWith('/myorder')) {
+            } else if (location.pathname.startsWith('/my-orders')) {
                 setScrolled(true);
             }
             else if (location.pathname === '/booking') {
@@ -24,7 +25,7 @@ const Navbar = ({ setShowLogin }) => {
             else if (location.pathname === '/confirm') {
                 setScrolled(true);
             }
-            else if (location.pathname === '/booking/success') {
+            else if (location.pathname === '/booking-success' || location.pathname === '/booking-fail') {
                 setScrolled(true);
             }
             else if (window.scrollY > 50) {
@@ -35,9 +36,6 @@ const Navbar = ({ setShowLogin }) => {
         };
 
         handleScroll();
-        // console.log("userId", localStorage.getItem('userId'))
-        // localStorage.removeItem('userId')
-        // localStorage.removeItem('customerToken')
 
         window.addEventListener('scroll', handleScroll);
 
@@ -46,12 +44,8 @@ const Navbar = ({ setShowLogin }) => {
         };
     }, [location.pathname]);
 
-    // fetchUser()
-
     let tontai = false;
-    // if(token) {
-    //     tontai = true;
-    // }
+
     if (localStorage.getItem('userId')) {
         tontai = true;
     }
@@ -71,24 +65,19 @@ const Navbar = ({ setShowLogin }) => {
                     <Link to="/flight">
                         <li onClick={() => setMenu("flight")} className={menu === "flight" ? "active" : ""}>Flight</li>
                     </Link>
-                    <Link to="/myorder">
-                        <li onClick={() => setMenu("order")} className={menu === "order" ? "active" : ""}>Order</li>
+                    <Link to="/my-orders">
+                        <li onClick={() => setMenu("my-orders")} className={menu === "my-orders" ? "active" : ""}>Order</li>
                     </Link>
-                    <Link to="/contact"><li onClick={() => setMenu("contact")} className={menu === "contact" ? "active" : ""}>
-                        Contact us</li></Link>
                 </ul>
                 {/* </div> */}
                 <ul className='navbar-profile'>
                     <li className="flag"><img src={assets.englandflag} className="flag" alt="language"></img></li>
                     <li>Help</li>
-                    <li>App-Download</li>
                     {!tontai ?
                         <li onClick={() => setShowLogin(true)}>Sign-In</li>
                         :
                         <h4>{user.username}</h4>
                     }
-                    {/* <li onClick={() => setShowLogin(true)}><h4>john_doe</h4></li> */}
-
                 </ul>
             </div>
         </nav>
