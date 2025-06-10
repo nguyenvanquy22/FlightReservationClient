@@ -425,7 +425,8 @@ const StoreContextProvider = (props) => {
 
         const hours = Math.floor(durationInMinutes / 60);
         const minutes = durationInMinutes % 60;
-        return `${hours}h ${minutes}m`;
+
+        return hours > 0 && minutes > 0 ? `${hours}h ${minutes}m` : hours > 0 ? `${hours}h` : `${minutes}m`;
     };
 
     const calculateDaysOvernight = (departureTime, arrivalTime) => {

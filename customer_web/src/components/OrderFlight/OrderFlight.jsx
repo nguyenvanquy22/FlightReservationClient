@@ -90,7 +90,7 @@ const OrderFlight = () => {
                                 setShowSuggestions(false)
                             }}
                             onBlur={() => {
-                                setTimeout(() => setShowOrigin(false), 200);
+                                setTimeout(() => setShowOrigin(false), 300);
                             }}
                             required
                         />
@@ -119,7 +119,7 @@ const OrderFlight = () => {
                                 setShowSuggestions(true)
                             }}
                             onBlur={() => {
-                                setTimeout(() => setShowSuggestions(false), 200);
+                                setTimeout(() => setShowSuggestions(false), 300);
                             }}
                             required
                         />

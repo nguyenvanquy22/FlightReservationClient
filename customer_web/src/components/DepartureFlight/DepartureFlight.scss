@@ -245,8 +245,9 @@
         .transit-points {
             flex: 0 0 auto;
             overflow: hidden;
-            width: 370px;
             transition: height 0.25s ease, padding 0.25s ease;
+            display: flex;
+            gap: 20px;
 
             .transit-point {
                 display: flex;
