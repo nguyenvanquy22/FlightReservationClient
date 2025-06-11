@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminLoginPage.scss";
+import config from '../config.json';
+const { SERVER_API } = config;
 
 const AdminLoginPage = () => {
     const [username, setUsername] = useState("");
@@ -13,7 +15,7 @@ const AdminLoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch("https://flight-reservation-server.onrender.com/api/auth/login", {
+            const response = await fetch(`${SERVER_API}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

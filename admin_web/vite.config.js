@@ -12,7 +12,6 @@ export default defineConfig({
         target: 'https://flight-reservation-server.onrender.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }

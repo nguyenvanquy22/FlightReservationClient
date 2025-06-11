@@ -27,7 +27,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
         if (currState === "Login") {
             try {
-                const response = await fetch("https://flight-reservation-server.onrender.com/api/auth/login", {
+                const response = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const LoginPopup = ({ setShowLogin }) => {
             }
         } else {
             try {
-                const response = await fetch("https://flight-reservation-server.onrender.com/api/auth/register", {
+                const response = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

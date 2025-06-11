@@ -175,7 +175,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.put(
-                    `https://flight-reservation-server.onrender.com/api/users/${localStorage.getItem("userId")}`,
+                    `/api/users/${localStorage.getItem("userId")}`,
                     { ...formData },
                     {
                         headers: {

@@ -149,7 +149,7 @@ const ChangePassword = () => {
             try {
                 // Send PUT request to update password
                 const response = await axios.put(
-                    `https://flight-reservation-server.onrender.com/api/users/${user.id}`,
+                    `/api/users/${user.id}`,
                     updatedUser,
                     {
                         headers: {
