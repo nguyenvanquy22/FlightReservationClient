@@ -3,15 +3,37 @@ import './Myorderlist.scss';
 import { StoreContext } from '../../../context/StoreContext';
 import BookingItem from '../../BookingItem/BookingItem';
 
+const STATUSES = [
+    { label: 'All', value: '' },
+    { label: 'Confirmed', value: 'CONFIRMED' },
+    { label: 'Pending', value: 'PENDING' },
+    { label: 'Cancelled', value: 'CANCELLED' },
+    { label: 'Payment Failed', value: 'PAYMENT_FAILED' },
+];
+
 const Myorderlist = () => {
     const { myOrders, token, fetchMyOrders } = useContext(StoreContext);
-
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
+    const [bookingStatus, setBookingStatus] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (token) fetchMyOrders();
-    }, []);
+        const fetchOrders = async () => {
+            setLoading(true);
+            try {
+                setCurrentPage(1);
+                await fetchMyOrders(bookingStatus);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+                console.log(error)
+            }
+        }
+        if (token) {
+            fetchOrders();
+        }
+    }, [bookingStatus, token]);
 
     // Tính tổng số trang
     const totalPages = Math.ceil(myOrders.length / itemsPerPage);
@@ -33,24 +55,33 @@ const Myorderlist = () => {
                 <h2>My Orders List</h2>
 
                 <div className="order-tabs">
-                    <span>All</span>
-                    <span>Issued</span>
-                    <span>Confirmed</span>
-                    <span>Waiting</span>
-                    <span>Cancelled</span>
+                    {STATUSES.map((st) => (
+                        <span
+                            key={st.value}
+                            className={st.value === bookingStatus ? 'active' : ''}
+                            onClick={() => setBookingStatus(st.value)}
+                        >
+                            {st.label}
+                        </span>
+                    ))}
                     <span>
                         <input type="text" id="search-input" placeholder="Search..." />
                         <button id="search-button">Search</button>
                     </span>
                 </div>
 
-                <div className="main-content-orderlist">
-                    {paginatedBookings.map((booking) => (
-                        <BookingItem key={booking.id} booking={booking} />
-                    ))}
+                {!loading ? (
+                    <div className="main-content-orderlist">
+                        {paginatedBookings.map((booking) => (
+                            <BookingItem key={booking.id} booking={booking} />
+                        ))}
 
-                    {myOrders.length === 0 && <p className='empty-orders'>Bạn chưa có đơn nào.</p>}
-                </div>
+                        {myOrders.length === 0 && <p className='empty-orders'>Không có đơn nào.</p>}
+                    </div>
+                ) : (
+                    <div style={{ textAlign: "center", padding: '50px' }}>Loading...</div>
+                )}
+
 
                 {totalPages > 1 && (
                     <div className="pagination">

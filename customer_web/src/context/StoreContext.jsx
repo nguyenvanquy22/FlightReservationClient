@@ -114,7 +114,7 @@ const StoreContextProvider = (props) => {
         }
     };
 
-    const fetchMyOrders = async () => {
+    const fetchMyOrders = async (bookingStatus) => {
         try {
             const authToken = localStorage.getItem("customerToken");
             const userId = localStorage.getItem("userId");
@@ -128,6 +128,9 @@ const StoreContextProvider = (props) => {
             setMyOrders([]);
 
             const response = await axios.get(`${url}/api/bookings/user/${userId}`, {
+                params: {
+                    bookingStatus: bookingStatus || null
+                },
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },

@@ -84,17 +84,22 @@
         font-weight: bold;
         cursor: pointer;
         transition: color 0.3s;
+
+        &:hover,
+        &.active {
+            color: #d80000;
+        }
     }
-}
 
-#search-input {
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+    input#search-input {
+        margin-left: 32px;
+        padding: 4px 8px;
+    }
 
-.order-tabs span:hover {
-    color: #d80000;
+    button#search-button {
+        margin-left: 8px;
+        padding: 4px 8px;
+    }
 }
 
 .main-content-orderlist {
