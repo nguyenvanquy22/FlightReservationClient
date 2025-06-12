@@ -34,30 +34,46 @@ const Flight = () => {
         filterByStops(stops);
     };
 
+    const prices = newFlights.flatMap(f =>
+        f.seatOptions.map(o => o.seatPrice)
+    );
+    const globalMin = prices.length ? Math.min(...prices) : 0;
+    const globalMax = prices.length ? Math.max(...prices) : 0;
+    const [maxPrice, setMaxPrice] = useState(globalMax);
+
+    useEffect(() => {
+        setMaxPrice(globalMax);
+    }, [globalMax]);
+
     const filterFlights = () => {
-        if (selectedTimes.length === 0) {
-            return newFlights; // Nếu không chọn gì thì hiển thị tất cả chuyến bay
+        let flights = newFlights;
+
+        // time
+        if (selectedTimes.length) {
+            flights = flights.filter(f => {
+                const hour = parseInt(f.departureTime.slice(11, 13), 10);
+                return selectedTimes.some(r => {
+                    const [s, e] = r.split('-').map(t => parseInt(t.slice(0, 2), 10));
+                    return hour >= s && hour < e;
+                });
+            });
         }
 
-        return newFlights.filter(flight => {
-            const flightTime = new Date(flight.departureTime).toTimeString().slice(0, 5); // Chuyển thời gian khởi hành thành dạng "HH:MM"
-            return selectedTimes.some(timeRange => {
-                if (typeof timeRange !== 'string') {
-                    console.error('Invalid time range:', timeRange);
-                    return false;
-                }
-                const [start, end] = timeRange.split('-');
-                const start1 = parseInt(start.slice(0, 2));
-                const end1 = parseInt(end.slice(0, 2));
-                const flightTime1 = parseInt(flightTime.slice(0, 2));
-                // console.log("start", typeof(start1), start1, "end", end1, "flightTime", typeof(flightTime1), flightTime1);
-                return flightTime1 >= start1 && flightTime1 < end1;
-            });
+        // price
+        const filteredFlights = flights.reduce((result, flight) => {
+            const validOptions = flight.seatOptions.filter(o => o.seatPrice <= maxPrice);
+            if (validOptions.length > 0) {
+                result.push({ ...flight, seatOptions: validOptions });
+            }
+            return result;
+        }, []);
 
-        });
+        return filteredFlights;
     };
 
     const filteredFlights = filterFlights(); // Chuyến bay đã lọc
+
+    console.log(filteredFlights)
 
     return (
         <div>
@@ -73,6 +89,7 @@ const Flight = () => {
                                 onClick={() => {
                                     setSelectedTimes([]);
                                     handleStopsChange(2);
+                                    setMaxPrice(globalMax)
                                 }}
                             >
                                 Reset All
@@ -80,7 +97,19 @@ const Flight = () => {
                         </div>
                         <div className="filter-price">
                             <h3>Price</h3>
-                            <div>Range Price</div>
+                            <input
+                                type="range"
+                                min={globalMin}
+                                max={globalMax}
+                                step={100000}
+                                value={maxPrice}
+                                onChange={e => setMaxPrice(Number(e.target.value))}
+                            />
+
+                            <div className="price-labels">
+                                <span>{globalMin.toLocaleString()} ₫</span>
+                                <span>{maxPrice.toLocaleString()} ₫</span>
+                            </div>
                         </div>
                         <hr />
 
