@@ -475,6 +475,7 @@ const StoreContextProvider = (props) => {
         passengerDetails,
         urlPayment,
         myOrders,
+        setUser,
 
         // Authentication
         login,

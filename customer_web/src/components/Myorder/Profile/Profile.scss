@@ -9,12 +9,8 @@
     padding: 20px;
 
     h1 {
-        text-align: center;
         color: #333;
         font-size: 28px;
-        /* Tăng kích thước chữ */
-        margin-bottom: 20px;
-        /* Thêm khoảng cách dưới h1 */
     }
 }
 
@@ -34,6 +30,7 @@
 .profile-left {
     display: flex;
     align-items: center;
+    gap: 12px;
 }
 
 .profile-picture {
