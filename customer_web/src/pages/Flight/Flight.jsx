@@ -73,8 +73,6 @@ const Flight = () => {
 
     const filteredFlights = filterFlights(); // Chuyến bay đã lọc
 
-    console.log(filteredFlights)
-
     return (
         <div>
             <div className="Header">

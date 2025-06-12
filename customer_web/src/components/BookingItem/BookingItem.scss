@@ -1,11 +1,12 @@
+/* BookingItem.scss */
 .orderlist-item {
     background: #fff;
     border-radius: 8px;
     padding: 16px;
     margin: 12px 0;
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
 
     >div {
         margin-right: 24px;
@@ -28,12 +29,38 @@
     padding-top: 12px;
     border-top: 1px solid #eee;
 
-    h4 {
-        margin: 8px 0;
-        color: #df0000;
+    .ticket-detail {
+        margin-bottom: 16px;
+
+        h4 {
+            margin: 8px 0;
+            color: #df0000;
+        }
+
+        .flight-info,
+        .passenger-info,
+        .seat-info,
+        .luggage-info,
+        .payment-info {
+            margin-bottom: 8px;
+
+            p {
+                margin: 2px 0;
+            }
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 12px 0;
+        }
     }
 
-    .passenger {
-        margin-bottom: 8px;
+    .payment-info {
+        h4 {
+            margin-bottom: 16px;
+            font-size: 20px;
+            color: #df0000;
+        }
     }
 }
