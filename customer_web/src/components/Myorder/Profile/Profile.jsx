@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import "./Profile.scss";
 import { StoreContext } from "../../../context/StoreContext";
+import { SERVER_API } from '../../../config'
 
 const Profile = () => {
     const { user, setUser } = useContext(StoreContext);
@@ -51,7 +52,7 @@ const Profile = () => {
 
             try {
                 const response = await axios.put(
-                    `http://localhost:8080/api/users/${localStorage.getItem("userId")}`,
+                    `${SERVER_API}/api/users/${localStorage.getItem("userId")}`,
                     { ...formData },
                     {
                         headers: {

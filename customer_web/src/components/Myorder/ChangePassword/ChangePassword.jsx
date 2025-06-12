@@ -3,6 +3,7 @@ import axios from "axios";
 import './ChangePassword.scss';
 import { StoreContext } from "../../../context/StoreContext";
 import bcrypt from 'bcryptjs';
+import { SERVER_API } from '../../../config'
 
 const ChangePassword = () => {
     const { user, setUser } = useContext(StoreContext); // Get user data from context
@@ -149,7 +150,7 @@ const ChangePassword = () => {
             try {
                 // Send PUT request to update password
                 const response = await axios.put(
-                    `/api/users/${user.id}`,
+                    `${SERVER_API}/api/users/${user.id}`,
                     updatedUser,
                     {
                         headers: {

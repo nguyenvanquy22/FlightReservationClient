@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
+import { SERVER_API } from '../config'
 
 // Create separate contexts for different concerns
 export const StoreContext = createContext(null);
@@ -37,7 +38,7 @@ const StoreContextProvider = (props) => {
     // Authentication Functions
     const login = async (username, password) => {
         try {
-            const response = await axios.post(`/api/auth/login`, {
+            const response = await axios.post(`${SERVER_API}/api/auth/login`, {
                 username,
                 password
             });
@@ -67,7 +68,7 @@ const StoreContextProvider = (props) => {
                 console.error("Token is missing");
                 return;
             }
-            const response = await axios.get(`/api/airports`, {
+            const response = await axios.get(`${SERVER_API}/api/airports`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -84,7 +85,7 @@ const StoreContextProvider = (props) => {
                 console.error("Token is missing");
                 return;
             }
-            const response = await axios.get(`/api/flights`, {
+            const response = await axios.get(`${SERVER_API}/api/flights`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -101,7 +102,7 @@ const StoreContextProvider = (props) => {
                 console.error("Token or userId is missing");
                 return;
             }
-            const response = await axios.get(`/api/users/${userId}`, {
+            const response = await axios.get(`${SERVER_API}/api/users/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -125,7 +126,7 @@ const StoreContextProvider = (props) => {
             // Clear previous orders
             setMyOrders([]);
 
-            const response = await axios.get(`/api/bookings/user/${userId}`, {
+            const response = await axios.get(`${SERVER_API}/api/bookings/user/${userId}`, {
                 params: {
                     bookingStatus: bookingStatus || null
                 },
@@ -309,7 +310,7 @@ const StoreContextProvider = (props) => {
     const generatePaymentUrl = async (bookingId, amount) => {
         try {
             const authToken = localStorage.getItem("customerToken");
-            const res = await axios.get(`/api/payments/vn-pay`, {
+            const res = await axios.get(`${SERVER_API}/api/payments/vn-pay`, {
                 params: {
                     bookingId,
                     amount,
@@ -367,7 +368,7 @@ const StoreContextProvider = (props) => {
                 });
             }
 
-            const res = await axios.post(`/api/bookings`, bookingData, {
+            const res = await axios.post(`${SERVER_API}/api/bookings`, bookingData, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                     "Content-Type": "application/json",

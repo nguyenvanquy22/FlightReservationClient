@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import "./LoginPopup.scss";
+import { SERVER_API } from '../../config'
 
 const LoginPopup = ({ setShowLogin }) => {
 
@@ -27,7 +28,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
         if (currState === "Login") {
             try {
-                const response = await fetch("/api/auth/login", {
+                const response = await fetch(`${SERVER_API}/api/auth/login`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -62,7 +63,7 @@ const LoginPopup = ({ setShowLogin }) => {
             }
         } else {
             try {
-                const response = await fetch("/api/auth/register", {
+                const response = await fetch(`${SERVER_API}/api/auth/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

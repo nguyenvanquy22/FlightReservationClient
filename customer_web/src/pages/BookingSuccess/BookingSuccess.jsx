@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { StoreContext } from "../../context/StoreContext";
 import "./BookingSuccess.scss";
+import { SERVER_API } from '../../config'
 
 const BookingSuccess = () => {
     const { search } = useLocation();
@@ -19,7 +20,7 @@ const BookingSuccess = () => {
         const fetchBooking = async () => {
             try {
                 const res = await axios.get(
-                    `/api/bookings/${bookingId}`,
+                    `${SERVER_API}/api/bookings/${bookingId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
