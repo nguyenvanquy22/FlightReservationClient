@@ -166,7 +166,7 @@ function Dashboard() {
           <TrafficChart />
         </div>
 
-        <div className="chart_revenue">
+        {/*<div className="chart_revenue">
           <RevenueChart
             revenueData={revenueData}
             filterType={filterType}
@@ -176,7 +176,7 @@ function Dashboard() {
             selectedMonth={selectedMonth}
             setSelectedMonth={setSelectedMonth}
           />
-        </div>
+        </div>*/}
 
         {/* Flights Table */}
         {/* <TopFlightTable flights={currentFlights} /> */}

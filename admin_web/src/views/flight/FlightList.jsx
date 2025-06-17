@@ -152,7 +152,12 @@ const Flightlist = () => {
         // 3. Times hợp lệ: arrival > departure
         const dep = new Date(flightData.departureTime);
         const arr = new Date(flightData.arrivalTime);
-        if (!(arr > dep)) {
+        const now = new Date();
+        const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        console.log(dep, next24Hours)
+        if (dep < next24Hours) {
+            errors.times = "Departure time must be after 24 hours from now.";
+        } else if (!(arr > dep)) {
             errors.times = "Arrival time must be after departure time.";
         }
 
